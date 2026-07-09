@@ -1,26 +1,343 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
+
+/* ------------------------------------------------------------------ */
+/* TDF-SYS-01 / TDF-BRD-01 — design tokens.                            */
+/* Every colour, radius, duration and spacing value used anywhere in   */
+/* the app resolves to one of these. Hardcoding a value is a bug.      */
+/* ------------------------------------------------------------------ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* -- Colour · graphite ramp (13 steps) ---------------------------- */
+  --tdf-000: #ffffff;
+  --tdf-025: #fafaf9; /* Paper — surface */
+  --tdf-050: #f4f4f3;
+  --tdf-100: #eaeae8;
+  --tdf-200: #dbdcda; /* Fog — line */
+  --tdf-300: #c2c4c2;
+  --tdf-400: #9a9da1; /* Ash — ≥18px only */
+  --tdf-500: #71757b;
+  --tdf-600: #545862;
+  --tdf-700: #3b3f48; /* Iron — secondary */
+  --tdf-800: #262a31;
+  --tdf-900: #171a1f;
+  --tdf-950: #0d0f13; /* Graphite — primary */
+
+  /* -- Colour · Blueprint accent ramp ------------------------------- */
+  --tdf-accent-050: #eef1fe;
+  --tdf-accent-100: #dde3fc;
+  --tdf-accent-300: #7c90f0; /* Blueprint Lt — dark surfaces only */
+  --tdf-accent-400: #4e67e4;
+  --tdf-accent-500: #1f3fd8; /* Blueprint */
+  --tdf-accent-600: #1832ae;
+  --tdf-accent-700: #142887;
+
+  /* -- Colour · semantic -------------------------------------------- */
+  --success: #10714f;
+  --warning: #8a5a00;
+  --danger: #b0302a;
+
+  /* -- Theme (light) ------------------------------------------------- */
+  --bg: var(--tdf-025);
+  --bg-raised: var(--tdf-000);
+  --bg-sunken: var(--tdf-050);
+  --fg: var(--tdf-950);
+  --fg-secondary: var(--tdf-700);
+  --fg-muted: var(--tdf-600);
+  --line: var(--tdf-200);
+  --accent: var(--tdf-accent-500);
+  --accent-surface: var(--tdf-accent-050);
+  --focus: var(--tdf-accent-500);
+
+  /* -- Radius --------------------------------------------------------
+     0 flush · 2 chip · 4 input · 8 card · 12 panel · 20 band · full   */
+  --r-chip: 2px;
+  --r-input: 4px;
+  --r-card: 8px;
+  --r-panel: 12px;
+  --r-band: 20px;
+
+  /* -- Elevation (shadows tinted rgba(13,15,19,·)) ------------------- */
+  --e-0: none;
+  --e-1: 0 1px 2px rgba(13, 15, 19, 0.06);
+  --e-2: 0 2px 8px rgba(13, 15, 19, 0.08), 0 1px 2px rgba(13, 15, 19, 0.04);
+  --e-3: 0 8px 24px rgba(13, 15, 19, 0.12), 0 2px 6px rgba(13, 15, 19, 0.06);
+  --e-4: 0 16px 48px rgba(13, 15, 19, 0.18), 0 4px 12px rgba(13, 15, 19, 0.08);
+
+  /* -- Motion --------------------------------------------------------
+     --d-ambient / --d-hold exist solely for the hero image cycle
+     (BRIEF §5.1). Ambient, not interactive. No other component may
+     use them.                                                          */
+  --d-1: 120ms;
+  --d-2: 180ms;
+  --d-3: 260ms;
+  --d-4: 420ms;
+  --d-ambient: 1200ms;
+  --d-hold: 6000ms;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+
+  /* -- Layout --------------------------------------------------------- */
+  --container: 1200px;
+  --gutter: clamp(20px, 5vw, 64px);
 }
+
+[data-theme="dark"] {
+  --bg: #0d0f13;
+  --bg-raised: #171a1f;
+  --bg-sunken: #08090c;
+  --fg: var(--tdf-050);
+  --fg-secondary: var(--tdf-300);
+  --fg-muted: var(--tdf-400);
+  --line: var(--tdf-800);
+  --accent: var(--tdf-accent-300); /* Blueprint fails on Graphite; Lt passes */
+  --accent-surface: var(--tdf-900);
+  --focus: var(--tdf-accent-300);
+}
+
+/* ------------------------------------------------------------------ */
+/* Tailwind theme mapping                                              */
+/* ------------------------------------------------------------------ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* graphite ramp */
+  --color-tdf-000: var(--tdf-000);
+  --color-tdf-025: var(--tdf-025);
+  --color-tdf-050: var(--tdf-050);
+  --color-tdf-100: var(--tdf-100);
+  --color-tdf-200: var(--tdf-200);
+  --color-tdf-300: var(--tdf-300);
+  --color-tdf-400: var(--tdf-400);
+  --color-tdf-500: var(--tdf-500);
+  --color-tdf-600: var(--tdf-600);
+  --color-tdf-700: var(--tdf-700);
+  --color-tdf-800: var(--tdf-800);
+  --color-tdf-900: var(--tdf-900);
+  --color-tdf-950: var(--tdf-950);
+
+  /* blueprint ramp — bg-accent-500 etc. */
+  --color-accent-50: var(--tdf-accent-050);
+  --color-accent-100: var(--tdf-accent-100);
+  --color-accent-300: var(--tdf-accent-300);
+  --color-accent-400: var(--tdf-accent-400);
+  --color-accent-500: var(--tdf-accent-500);
+  --color-accent-600: var(--tdf-accent-600);
+  --color-accent-700: var(--tdf-accent-700);
+
+  /* theme-aware accent: Blueprint on light, Blueprint Lt on dark */
+  --color-blueprint: var(--accent);
+  --color-blueprint-surface: var(--accent-surface);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  /* semantic surfaces */
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-raised: var(--bg-raised);
+  --color-sunken: var(--bg-sunken);
+  --color-line: var(--line);
+  --color-focus: var(--focus);
+
+  /* shadcn/ui token contract — mapped onto TDF tokens.
+     NB: `accent` here is the subtle hover surface shadcn expects,
+     NOT Blueprint. Blueprint is `blueprint` / `accent-500`.          */
+  --color-card: var(--bg-raised);
+  --color-card-foreground: var(--fg);
+  --color-popover: var(--bg-raised);
+  --color-popover-foreground: var(--fg);
+  --color-primary: var(--fg);
+  --color-primary-foreground: var(--bg);
+  --color-secondary: var(--bg-sunken);
+  --color-secondary-foreground: var(--fg-secondary);
+  --color-muted: var(--bg-sunken);
+  --color-muted-foreground: var(--fg-muted);
+  --color-accent: var(--bg-sunken);
+  --color-accent-foreground: var(--fg);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--tdf-025);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--focus);
+
+  /* type */
+  --font-display: var(--font-newsreader);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+
+  /* radius */
+  --radius-chip: var(--r-chip);
+  --radius-input: var(--r-input);
+  --radius-card: var(--r-card);
+  --radius-panel: var(--r-panel);
+  --radius-band: var(--r-band);
+
+  /* elevation */
+  --shadow-e1: var(--e-1);
+  --shadow-e2: var(--e-2);
+  --shadow-e3: var(--e-3);
+  --shadow-e4: var(--e-4);
+
+  /* motion */
+  --ease-tdf: var(--ease);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+html {
+  background: var(--bg);
+  color: var(--fg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--line);
+}
+
+/* Focus — 2px solid at 2px offset. Never removed. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--tdf-025);
+}
+
+/* ------------------------------------------------------------------ */
+/* Type scale (TDF-SYS-01 §type)                                       */
+/* ------------------------------------------------------------------ */
+
+.text-display-1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 64px;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.text-display-2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 48px;
+  line-height: 1.08;
+  letter-spacing: -0.018em;
+}
+
+/* one phrase per page, in Blueprint */
+.text-display-italic {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--accent);
+}
+
+.text-h1 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.text-body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.text-caption {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.text-mono-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout                                                              */
+/* ------------------------------------------------------------------ */
+
+.container-tdf {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ------------------------------------------------------------------ */
+/* Glass (BRIEF §5.1) — recoloured to Graphite                          */
+/* ------------------------------------------------------------------ */
+
+.tdf-glass {
+  background: rgba(13, 15, 19, 0.4);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(250, 250, 249, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tdf-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(250, 250, 249, 0.3) 0%,
+    rgba(250, 250, 249, 0.1) 20%,
+    rgba(250, 250, 249, 0) 40%,
+    rgba(250, 250, 249, 0) 60%,
+    rgba(250, 250, 249, 0.1) 80%,
+    rgba(250, 250, 249, 0.3) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion safety                                                       */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
