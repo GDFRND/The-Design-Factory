@@ -48,31 +48,47 @@ export function AnimatedHeading({
       {lines.map((line, li) => {
         const lineStart = charCount;
         charCount += line.length + 1; // +1 for the split newline
+        // Group characters into words so lines break at word
+        // boundaries, never mid-word.
+        const words: { text: string; start: number }[] = [];
+        let cursor = 0;
+        for (const w of line.split(" ")) {
+          words.push({ text: w, start: lineStart + cursor });
+          cursor += w.length + 1;
+        }
         return (
           <span key={li} aria-hidden className="block">
-            {Array.from(line).map((ch, ci) => {
-              const abs = lineStart + ci;
-              const idx = globalIndex++;
-              const inAccent = abs >= accentStart && abs < accentEnd && accentStart >= 0;
-              return (
-                <span
-                  key={ci}
-                  className={cn(
-                    "inline-block transition-[opacity,transform] duration-260 ease-tdf",
-                    inAccent && accentClassName
-                  )}
-                  style={{
-                    opacity: shown ? 1 : 0,
-                    transform: shown ? "none" : "translateX(-18px)",
-                    transitionDelay: reduced
-                      ? "0ms"
-                      : `${initialDelay + idx * speed}ms`,
-                  }}
-                >
-                  {ch === " " ? " " : ch}
+            {words.map((word, wi) => (
+              <React.Fragment key={wi}>
+                {wi > 0 ? " " : null}
+                <span className="inline-block whitespace-nowrap">
+                  {Array.from(word.text).map((ch, ci) => {
+                    const abs = word.start + ci;
+                    const idx = globalIndex++;
+                    const inAccent =
+                      accentStart >= 0 && abs >= accentStart && abs < accentEnd;
+                    return (
+                      <span
+                        key={ci}
+                        className={cn(
+                          "inline-block transition-[opacity,transform] duration-260 ease-tdf",
+                          inAccent && accentClassName
+                        )}
+                        style={{
+                          opacity: shown ? 1 : 0,
+                          transform: shown ? "none" : "translateX(-18px)",
+                          transitionDelay: reduced
+                            ? "0ms"
+                            : `${initialDelay + idx * speed}ms`,
+                        }}
+                      >
+                        {ch}
+                      </span>
+                    );
+                  })}
                 </span>
-              );
-            })}
+              </React.Fragment>
+            ))}
           </span>
         );
       })}
