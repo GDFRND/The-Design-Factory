@@ -3,18 +3,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/* Chips sit at radius 2 (TDF-SYS-01 §radius). The `mono` variant is the
+   spec-label treatment: JetBrains Mono, uppercase, tracked. */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-chip border px-2 py-0.5 text-xs transition-colors duration-180 ease-tdf",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "border-line bg-sunken text-secondary-foreground",
+        mono: "border-line bg-transparent font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground",
+        success: "border-transparent bg-success/10 text-success",
+        warning: "border-transparent bg-warning/10 text-warning",
+        danger: "border-transparent bg-danger/10 text-danger",
+        outline: "border-line text-foreground",
       },
     },
     defaultVariants: {
