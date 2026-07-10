@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "prisma generate",
     "db:start": "node scripts/dev-db.mjs start",
-    "db:stop": "node scripts/dev-db.mjs stop"
+    "db:stop": "node scripts/dev-db.mjs stop",
+    "test": "vitest run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -47,6 +48,7 @@
     "pngjs": "^7.0.0",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
