@@ -35,7 +35,10 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-tdf-950 pt-24">
+    <footer
+      data-theme="dark"
+      className="border-t border-(--line-strong) bg-tdf-950 pt-24"
+    >
       <div className="container-tdf flex flex-col items-center gap-10">
         <InstitutionalLockup
           variant="reversed"

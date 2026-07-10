@@ -11,14 +11,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        /* Primary: Paper on Graphite (dark) / inverse on light. The
+           hover glow lives in the ring, not the fill (TDF-06 §2.3). */
         default:
-          "bg-foreground text-background hover:bg-tdf-700 dark:hover:bg-tdf-200",
-        /* The one Blueprint element per viewport. Use once. */
+          "bg-foreground text-background hover:shadow-(--lift-accent)",
+        /* The one accent element per viewport. Use once. */
         accent:
-          "bg-blueprint text-tdf-025 hover:bg-accent-600 dark:text-tdf-950 dark:hover:bg-accent-100",
+          "bg-blueprint text-(--accent-fg) hover:shadow-(--lift-accent)",
         destructive: "bg-danger text-tdf-025 hover:opacity-90",
         outline:
-          "border border-line bg-transparent text-foreground hover:bg-sunken",
+          "border border-(--line-strong) bg-transparent text-foreground hover:bg-sunken",
         ghost: "text-foreground hover:bg-sunken",
         link: "text-blueprint underline-offset-4 hover:underline",
       },

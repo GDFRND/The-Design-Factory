@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MonoLabel } from "@/components/brand/mono-label";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/lib/auth/actions";
 
 /* Shared studio chrome: mark, breadcrumb, theme toggle, sign out. */
@@ -40,7 +39,6 @@ export function StudioShell({
             </MonoLabel>
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <form action={logout}>
               <button
                 type="submit"

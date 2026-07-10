@@ -140,8 +140,8 @@ export function StudioIntake() {
         </Label>
         <div
           className={cn(
-            "rounded-panel border bg-raised transition-colors duration-180 ease-tdf",
-            dragOver ? "border-tdf-400" : "border-line"
+            "panel panel--heavy border transition-colors duration-180 ease-tdf",
+            dragOver ? "border-(--line-strong)" : "border-transparent"
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -179,7 +179,7 @@ export function StudioIntake() {
               {attachments.map((att, i) => (
                 <li
                   key={att.id}
-                  className="flex items-center gap-2 rounded-input border border-line bg-background py-1 pl-1 pr-2"
+                  className="flex items-center gap-2 rounded-input bg-inset py-1 pl-1 pr-2"
                 >
                   <button
                     type="button"
@@ -192,12 +192,12 @@ export function StudioIntake() {
                       src={att.url}
                       alt=""
                       className={cn(
-                        "size-8 rounded-chip object-cover",
+                        "size-10 rounded-chip object-cover",
                         att.uploading && "opacity-40"
                       )}
                     />
                   </button>
-                  <span className="max-w-32 truncate text-caption text-secondary-foreground">
+                  <span className="max-w-32 truncate font-mono text-[11px] text-secondary-foreground">
                     {att.name}
                   </span>
                   <span className="text-caption text-muted-foreground">
@@ -207,7 +207,7 @@ export function StudioIntake() {
                     type="button"
                     aria-label={`Remove ${att.name}`}
                     onClick={() => removeAttachment(att.id)}
-                    className="text-muted-foreground transition-colors duration-120 ease-tdf hover:text-foreground"
+                    className="text-(--fg-subtle) transition-colors duration-120 ease-tdf hover:text-foreground"
                   >
                     <X className="size-3.5" aria-hidden />
                   </button>
@@ -243,8 +243,8 @@ export function StudioIntake() {
               className={cn(
                 "flex size-9 items-center justify-center rounded-full transition-colors duration-180 ease-tdf",
                 ready
-                  ? "bg-blueprint text-tdf-025 hover:bg-accent-600 dark:text-tdf-950"
-                  : "bg-sunken text-muted-foreground"
+                  ? "bg-blueprint text-(--accent-fg) hover:shadow-(--lift-accent)"
+                  : "bg-inset text-(--fg-subtle)"
               )}
             >
               <ArrowUp className="size-4" aria-hidden />
@@ -269,7 +269,7 @@ export function StudioIntake() {
             key={qa.label}
             type="button"
             onClick={() => applyQuickAction(qa)}
-            className="rounded-full border border-line bg-raised px-4 py-1.5 text-[13px] text-secondary-foreground transition-colors duration-180 ease-tdf hover:bg-sunken"
+            className="rounded-full border border-(--line-strong) bg-transparent px-4 py-1.5 text-[13px] text-foreground transition-colors duration-180 ease-tdf hover:bg-sunken"
           >
             {qa.label}
           </button>

@@ -37,7 +37,7 @@ export function SupportPanel({
     .toUpperCase();
 
   return (
-    <aside className="flex flex-col gap-4 rounded-panel border border-line bg-raised p-5">
+    <aside className="panel flex flex-col gap-4 p-5">
       <div className="flex items-center gap-3">
         <span
           aria-hidden

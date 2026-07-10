@@ -87,19 +87,67 @@
   /* -- Scrims (graphite-tinted, BRIEF §5.3) --------------------------- */
   --scrim: rgba(13, 15, 19, 0.5);
   --glass-border: rgba(219, 220, 218, 0.2);
+
+  /* -- TDF-06 light equivalents (dark-first tokens, light fallbacks) -- */
+  --bg-inset: var(--tdf-100);
+  --glass: rgba(255, 255, 255, 0.65);
+  --glass-heavy: rgba(250, 250, 249, 0.82);
+  --glass-blur: 16px;
+  --fg-subtle: var(--tdf-500);
+  --line-strong: var(--tdf-300);
+  --line-hairline: rgba(13, 15, 19, 0.06);
+  --accent-fg: var(--tdf-025);
+  --accent-dim: rgba(31, 63, 216, 0.12);
+  --orb-blueprint: radial-gradient(circle, #4e67e4 0%, #142887 55%, transparent 72%);
+  --orb-ash: radial-gradient(circle, #71757b 0%, #262a31 60%, transparent 75%);
+  --lift-1: var(--e-1);
+  --lift-2: var(--e-2);
+  --lift-3: var(--e-4);
+  --lift-accent: 0 0 0 1px rgba(31, 63, 216, 0.35), 0 0 32px -6px rgba(31, 63, 216, 0.28);
 }
 
+/* TDF-06 §1 — dark-first token layer (TDF-SYS-02 · Product).
+   Element-scoped so /studio and the hero can run dark while the
+   marketing sections below the fold stay on paper. */
 [data-theme="dark"] {
-  --bg: #0d0f13;
+  /* surfaces */
+  --bg: #0d0f13; /* Graphite */
   --bg-raised: #171a1f;
   --bg-sunken: #08090c;
-  --fg: var(--tdf-050);
+  --bg-inset: #262a31;
+  /* glass — the primary panel material */
+  --glass: rgba(23, 26, 31, 0.55);
+  --glass-heavy: rgba(13, 15, 19, 0.72);
+  --glass-blur: 16px;
+  /* text */
+  --fg: #f4f4f3;
   --fg-secondary: var(--tdf-300);
-  --fg-muted: var(--tdf-400);
-  --line: var(--tdf-800);
-  --accent: var(--tdf-accent-300); /* Blueprint fails on Graphite; Lt passes */
+  --fg-muted: #9a9da1;
+  --fg-subtle: #71757b;
+  /* lines are Fog at low alpha, never solid grey */
+  --line: rgba(219, 220, 218, 0.1);
+  --line-strong: rgba(219, 220, 218, 0.18);
+  --line-hairline: rgba(219, 220, 218, 0.06);
+  /* accent — Blueprint Lt. Full-strength Blueprint on Graphite fails WCAG. */
+  --accent: #7c90f0;
+  --accent-fg: #0d0f13;
+  --accent-dim: rgba(124, 144, 240, 0.14);
   --accent-surface: var(--tdf-900);
-  --focus: var(--tdf-accent-300);
+  --focus: #7c90f0;
+  /* Full-strength Blueprint survives in exactly one place: inside blurred
+     orbs, where it is atmosphere, not information. */
+  --orb-blueprint: radial-gradient(circle, #4e67e4 0%, #142887 55%, transparent 72%);
+  --orb-ash: radial-gradient(circle, #71757b 0%, #262a31 60%, transparent 75%);
+  /* elevation on dark is glow + border, not shadow */
+  --lift-1: 0 0 0 1px var(--line), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --lift-2: 0 0 0 1px var(--line), 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --lift-3: 0 0 0 1px var(--line-strong), 0 24px 60px -20px rgba(0, 0, 0, 0.75);
+  --lift-accent: 0 0 0 1px rgba(124, 144, 240, 0.35), 0 0 32px -6px rgba(124, 144, 240, 0.28);
+  /* elevation vars consumed by shadow-e* utilities follow the lifts */
+  --e-1: var(--lift-1);
+  --e-2: var(--lift-2);
+  --e-3: var(--lift-2);
+  --e-4: var(--lift-3);
 }
 
 /* ------------------------------------------------------------------ */
@@ -144,8 +192,12 @@
   --color-foreground: var(--fg);
   --color-raised: var(--bg-raised);
   --color-sunken: var(--bg-sunken);
+  --color-inset: var(--bg-inset);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-subtle: var(--fg-subtle);
   --color-focus: var(--focus);
+  --color-accent-fg: var(--accent-fg);
 
   /* shadcn/ui token contract — mapped onto TDF tokens.
      NB: `accent` here is the subtle hover surface shadcn expects,
@@ -333,6 +385,99 @@ body {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* TDF-06 §2 — materials: orbs, grain, glass panels, brand canvas      */
+/* ------------------------------------------------------------------ */
+
+/* Ambient orbs — the page's light source. At most two per screen,
+   one Blueprint and one Ash. Blueprint never behind body copy. */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(120px);
+  opacity: 0.3;
+  z-index: 0;
+}
+.orb--blueprint {
+  background: var(--orb-blueprint);
+}
+.orb--ash {
+  background: var(--orb-ash);
+}
+.orb--drift {
+  animation: tdf-orb-drift 40s linear infinite;
+}
+@keyframes tdf-orb-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4%, -3%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Grain — kills gradient banding on 8-bit displays. Above the orbs,
+   below the content. */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* Glass panel — the primary dark-chrome material, with a specular
+   top hairline. */
+.panel {
+  background: var(--glass);
+  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  border-radius: var(--r-panel);
+  box-shadow: var(--lift-2);
+  position: relative;
+  overflow: hidden;
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(244, 244, 243, 0.22) 0%,
+    rgba(244, 244, 243, 0.04) 30%,
+    rgba(244, 244, 243, 0) 60%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.panel--heavy {
+  background: var(--glass-heavy);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .panel,
+  .panel--heavy {
+    background: var(--bg-raised);
+  }
+}
+
+/* Brand canvas (TDF-06 §3.4) — the one surface hotel palettes touch.
+   Mid-grey: never Graphite, never Paper. */
+.brand-canvas {
+  background: var(--bg-inset);
+  border-radius: var(--r-panel);
 }
 
 /* ------------------------------------------------------------------ */

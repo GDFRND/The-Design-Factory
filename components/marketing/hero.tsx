@@ -18,7 +18,10 @@ const NAV_LINKS = [
 
 export function Hero() {
   return (
-    <header className="relative flex min-h-svh flex-col overflow-hidden bg-tdf-950">
+    <header
+      data-theme="dark"
+      className="relative flex min-h-svh flex-col overflow-hidden bg-tdf-950"
+    >
       <HeroCycle
         images={[
           { src: "/hero/1.jpg", alt: "" },
@@ -28,9 +31,17 @@ export function Hero() {
         progressClassName="bottom-6 right-6 md:bottom-8 md:right-8"
       />
 
+      {/* TDF-06 §3.1 — a pool of cool light for the headline to sit in.
+          A brand object, not a scrim. */}
+      <div
+        aria-hidden
+        className="orb orb--blueprint bottom-[-20%] left-[-15%] z-[5] size-[75vmin] mix-blend-screen opacity-45"
+      />
+      <div aria-hidden className="grain z-[6]" />
+
       {/* Navbar */}
       <div className="relative z-10 px-6 pt-6 md:px-12 lg:px-16">
-        <nav className="tdf-glass flex items-center justify-between rounded-panel px-4 py-2">
+        <nav className="panel flex items-center justify-between px-4 py-2">
           <Link href="/" aria-label="The Design Factory — home" className="shrink-0">
             {/* Full lockup needs ~320px; below md the mark stands alone
                 (40px minimum, TDF-BRD-01 §min-sizes). */}
@@ -112,7 +123,7 @@ export function Hero() {
           </FadeIn>
         </div>
         <FadeIn delay={1400} className="mt-10 hidden lg:mt-0 lg:flex lg:justify-end lg:pr-24">
-          <div className="tdf-glass rounded-panel px-6 py-3">
+          <div className="panel px-6 py-3">
             <MonoLabel size="sm" className="whitespace-nowrap text-tdf-200">
               Posters · Campaigns · Offers · Follow-up
             </MonoLabel>

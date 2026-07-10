@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { ArrowRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { CodeInput } from "@/components/auth/code-input";
 import { MonoLabel } from "@/components/brand/mono-label";
 import {
@@ -20,41 +21,17 @@ import {
 } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
 
-/* Right-hand auth sheet (BRIEF §5.3). Slides over the hero; Radix
-   handles focus trap, Esc and focus restore. localStorage is used for
-   the remembered email only — no tokens client-side, ever. */
+/* Split auth panel (TDF-06 §3.2): imagery left, form right, centred on
+   a heavy graphite backdrop. Radix handles focus trap, Esc and focus
+   restore. localStorage holds the remembered email only — no tokens
+   client-side, ever. On mobile the left column drops and the panel is
+   a full-height sheet. */
 
 type Mode = "login" | "signup" | "reset";
 type Step = "details" | "verification" | "complete";
 
 const REMEMBER_KEY = "tdf-remembered-email";
 const initialState: AuthState = { ok: false, step: "details" };
-
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden>
-      <path
-        fill="currentColor"
-        d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4Z"
-      />
-      <path
-        fill="currentColor"
-        opacity=".7"
-        d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a5.9 5.9 0 0 1-5.5-4H3.2v2.6A10 10 0 0 0 12 22Z"
-      />
-      <path
-        fill="currentColor"
-        opacity=".5"
-        d="M6.5 14a6 6 0 0 1 0-3.9V7.5H3.2a10 10 0 0 0 0 9L6.5 14Z"
-      />
-      <path
-        fill="currentColor"
-        opacity=".85"
-        d="M12 6c1.5 0 2.8.5 3.8 1.5L18.7 5A10 10 0 0 0 3.2 7.5L6.5 10A5.9 5.9 0 0 1 12 6Z"
-      />
-    </svg>
-  );
-}
 
 function strength(pw: string) {
   let s = 0;
@@ -182,43 +159,86 @@ export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
       : undefined;
 
   return (
-    <Sheet open onOpenChange={(open) => !open && close()}>
-      <SheetContent
-        side="right"
-        className="flex flex-col gap-0 overflow-y-auto bg-background p-8"
-        aria-describedby={undefined}
-      >
-        <SheetTitle className="text-h1">
-          {step === "complete"
-            ? "You're in."
-            : mode === "reset"
-              ? "Reset your password"
-              : mode === "signup"
-                ? "Create your account"
-                : "Welcome back"}
-        </SheetTitle>
-        <SheetDescription className="mt-1 text-[15px] text-muted-foreground">
-          {step === "verification"
-            ? `We sent a 6-digit code to ${email || "your email"}.`
-            : step === "complete"
-              ? "Your workspace is ready."
-              : mode === "signup"
-                ? "Your property's marketing department starts here."
+    <DialogPrimitive.Root open onOpenChange={(open) => !open && close()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          data-theme="dark"
+          className="fixed inset-0 z-50 bg-(--glass-heavy) backdrop-blur-[8px] duration-260 ease-tdf data-[state=open]:animate-in data-[state=open]:fade-in-0"
+        >
+          <div aria-hidden className="grain" />
+        </DialogPrimitive.Overlay>
+        <DialogPrimitive.Content
+          data-theme="dark"
+          aria-describedby={undefined}
+          className="fixed inset-0 z-50 grid overflow-hidden bg-raised text-foreground shadow-(--lift-3) duration-260 ease-tdf data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-4 md:inset-auto md:left-1/2 md:top-1/2 md:max-h-[92svh] md:w-[min(880px,92vw)] md:-translate-x-1/2 md:-translate-y-1/2 md:grid-cols-[45fr_55fr] md:rounded-panel"
+        >
+          {/* Left column — imagery, orb, mark, the page's one italic phrase */}
+          <div className="relative hidden overflow-hidden md:block">
+            <Image
+              src="/hero/1.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 768px) 25rem, 0vw"
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="orb orb--blueprint bottom-[-25%] left-[-30%] size-[120%] mix-blend-screen opacity-45"
+            />
+            <div aria-hidden className="grain" />
+            <div className="absolute bottom-8 left-8 z-10 flex flex-col gap-4">
+              <Image
+                src="/brand/tdf-mark-paper.png"
+                alt="The Design Factory"
+                width={48}
+                height={48}
+              />
+              <p className="font-display text-[28px] font-light italic leading-[1.2] text-tdf-050">
+                Built to be built on.
+              </p>
+            </div>
+          </div>
+
+          {/* Right column — the form on raised graphite */}
+          <div className="relative flex flex-col overflow-y-auto bg-raised p-8">
+            <DialogPrimitive.Close
+              aria-label="Close"
+              className="absolute right-4 top-4 rounded-full p-1 text-(--fg-subtle) transition-colors duration-180 ease-tdf hover:text-foreground"
+            >
+              <X className="size-4" aria-hidden />
+            </DialogPrimitive.Close>
+            <DialogPrimitive.Title className="text-h1">
+              {step === "complete"
+                ? "You're in."
                 : mode === "reset"
-                  ? "We'll email you a reset code."
-                  : "Sign in to your workspace."}
-        </SheetDescription>
+                  ? "Reset your password"
+                  : mode === "signup"
+                    ? "Create your account"
+                    : "Welcome back"}
+            </DialogPrimitive.Title>
+            <p className="mt-1 text-[15px] text-muted-foreground">
+              {step === "verification"
+                ? `We sent a 6-digit code to ${email || "your email"}.`
+                : step === "complete"
+                  ? "Your workspace is ready."
+                  : mode === "signup"
+                    ? "Your property's marketing department starts here."
+                    : mode === "reset"
+                      ? "We'll email you a reset code."
+                      : "Sign in to your workspace."}
+            </p>
 
         {step === "details" ? (
           <div className="mt-8 flex flex-col gap-6">
             {/* Google first — least friction on a phone. */}
             {mode !== "reset" ? (
               <>
+                {/* White fill, Graphite text, official mark (TDF-06 §3.2) */}
                 <a
                   href="/api/auth/google"
-                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-line bg-raised text-[15px] font-medium text-foreground transition-colors duration-180 ease-tdf hover:bg-sunken"
+                  className="inline-flex h-11 w-full items-center justify-center gap-3 rounded-full bg-tdf-000 text-[15px] font-medium text-tdf-950 transition-shadow duration-180 ease-tdf hover:shadow-(--lift-accent)"
                 >
-                  <GoogleIcon />
+                  <Image src="/brand/google-g.svg" alt="" width={16} height={16} />
                   Continue with Google
                 </a>
                 <div className="flex items-center gap-4" aria-hidden>
@@ -430,7 +450,9 @@ export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
             </Button>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }

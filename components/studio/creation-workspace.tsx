@@ -318,7 +318,7 @@ export function CreationWorkspace({
                     type="button"
                     disabled={busy}
                     onClick={() => refine(chip)}
-                    className="rounded-full border border-line bg-raised px-4 py-1.5 text-[13px] text-secondary-foreground transition-colors duration-180 ease-tdf hover:bg-sunken disabled:opacity-50"
+                    className="rounded-full border border-line bg-raised px-4 py-1.5 text-[13px] text-(--fg-muted) transition-colors duration-180 ease-tdf hover:text-foreground disabled:opacity-50"
                   >
                     {chip}
                   </button>
@@ -475,9 +475,9 @@ function LoadingRail({ label }: { label?: string }) {
     <div className="flex flex-1 flex-col items-center justify-center gap-6">
       <span
         aria-hidden
-        className="size-10 animate-spin rounded-full border-2 border-tdf-400 border-t-transparent [animation-duration:1.2s]"
+        className="size-10 animate-spin rounded-full border-2 border-(--fg-subtle) border-t-transparent [animation-duration:1.2s]"
       />
-      <div className="h-1 w-56 overflow-hidden rounded-full bg-sunken">
+      <div className="h-1 w-56 overflow-hidden rounded-full bg-(--line)">
         <div className="h-full w-1/3 animate-pulse rounded-full bg-blueprint" />
       </div>
       <MonoLabel size="sm" className="text-muted-foreground" aria-live="polite">
@@ -596,7 +596,7 @@ function ImageGallery({
   onSelect: (id: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="brand-canvas grid grid-cols-2 gap-4 p-4">
       {variants.map((v, i) =>
         v.imageUrl ? (
           <button
@@ -605,8 +605,10 @@ function ImageGallery({
             onClick={() => onSelect(v.id)}
             aria-pressed={v.id === selectedId}
             className={cn(
-              "relative aspect-[4/5] overflow-hidden rounded-card border transition-colors duration-180 ease-tdf",
-              v.id === selectedId ? "border-foreground" : "border-line hover:border-tdf-300"
+              "relative aspect-[4/5] overflow-hidden rounded-card border transition-[border-color,box-shadow] duration-180 ease-tdf",
+              v.id === selectedId
+                ? "border-(--line-strong) shadow-(--lift-1)"
+                : "border-(--line) hover:border-(--line-strong)"
             )}
           >
             <Image
@@ -641,7 +643,7 @@ function TextEditorView({
   const copy = variant.copy;
   if (!copy) return null;
   return (
-    <div className="grid gap-6 lg:grid-cols-[120px_minmax(0,1fr)]">
+    <div className="brand-canvas grid gap-6 p-4 lg:grid-cols-[120px_minmax(0,1fr)] lg:p-6">
       <div className="flex flex-row flex-wrap gap-2 lg:flex-col">
         {TONE_CHIPS.map((t) => (
           <button
@@ -649,7 +651,7 @@ function TextEditorView({
             type="button"
             disabled={busy}
             onClick={() => onRefine(t)}
-            className="rounded-full border border-line bg-raised px-3 py-1 text-caption text-secondary-foreground transition-colors duration-180 ease-tdf hover:bg-sunken disabled:opacity-50"
+            className="rounded-full border border-line bg-raised px-3 py-1 text-caption text-(--fg-muted) transition-colors duration-180 ease-tdf hover:text-foreground disabled:opacity-50"
           >
             {t}
           </button>
@@ -694,7 +696,7 @@ function CompositeView({
   const copy = selected.copy;
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="brand-canvas grid gap-6 p-4 lg:grid-cols-2">
         <div className="relative aspect-[4/5] overflow-hidden rounded-card border border-line">
           {selected.imageUrl ? (
             <Image

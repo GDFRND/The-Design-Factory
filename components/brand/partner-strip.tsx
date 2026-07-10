@@ -24,6 +24,7 @@ export function PartnerStrip({ className }: { className?: string }) {
           width={Math.round(CAP * GENESIS_ASPECT)}
           height={CAP}
           style={{ width: Math.round(CAP * GENESIS_ASPECT), height: CAP }}
+          className="opacity-55 transition-opacity duration-180 ease-tdf hover:opacity-100"
         />
         <span aria-hidden className="h-7 w-px bg-tdf-200/40" />
         <Image
@@ -32,6 +33,7 @@ export function PartnerStrip({ className }: { className?: string }) {
           width={CAP}
           height={CAP}
           style={{ width: CAP, height: CAP }}
+          className="opacity-55 transition-opacity duration-180 ease-tdf hover:opacity-100"
         />
       </div>
     </div>

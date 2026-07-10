@@ -132,7 +132,7 @@ export default function KitchenSink() {
         <div className="grid max-w-md gap-4">
           <div className="grid gap-2">
             <Label htmlFor="ks-name">Hotel name</Label>
-            <Input id="ks-name" placeholder="Mara Sable Camp" />
+            <Input id="ks-name" placeholder="Rhino Fort Hotel" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="ks-type">Asset type</Label>
