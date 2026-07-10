@@ -102,12 +102,12 @@ export function Hero() {
               >
                 Create account
               </Link>
-              <Link
-                href="/studio"
+              <a
+                href="/api/demo"
                 className="tdf-glass inline-flex h-12 items-center rounded-full border border-(--glass-border) px-8 text-[15px] font-medium text-tdf-025 transition-colors duration-180 ease-tdf hover:bg-tdf-025 hover:text-tdf-950"
               >
                 Explore demo
-              </Link>
+              </a>
             </div>
           </FadeIn>
         </div>

@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Design Factory
 
-## Getting Started
+An AI marketing department for every hotel, lodge and resort in Kenya.
+A Genesis project, supported by the Tourism Fund.
 
-First, run the development server:
+The full product brief lives in [BRIEF.md](./BRIEF.md). Ship One covers:
+hero → auth → brand onboarding → studio → prompt expansion → generation →
+refinement → approval → download.
 
-```bash
+## Stack
+
+Next.js (App Router) + TypeScript · Tailwind (TDF-SYS-01 tokens) ·
+shadcn/ui · Prisma + PostgreSQL · Vercel Blob (signed local files in dev) ·
+argon2 + Google OAuth · server-side AI layer behind `lib/ai/`.
+
+## Local development
+
+```sh
+npm install
+npm run db:start        # project-contained Postgres on :5799 (.pgdata/)
+npx prisma migrate dev  # apply migrations
+npx tsx --conditions react-server prisma/seed.ts   # demo data (idempotent)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env` defaults work without any keys: the creative assistant and image
+engine fall back to deterministic offline implementations so every flow
+runs end-to-end. Add real keys to enable them:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Enables |
+|---|---|
+| `ANTHROPIC_API_KEY` | Prompt expansion, copywriting, assistant chat |
+| `GOOGLE_IMAGE_API_KEY` (+ optional `GOOGLE_IMAGE_MODEL`) | Real image generation |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Continue with Google |
+| `RESEND_API_KEY` | Real email (otherwise logged to the server console) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage (otherwise `.uploads/`) |
+| `DATABASE_URL` | Neon in production |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Demo accounts (after seeding): `naisula@demo.thedesignfactory.local`,
+`hamisi@demo.thedesignfactory.local`, `achieng@demo.thedesignfactory.local`
+— password `demo-password-2026`. "Explore demo" on the homepage signs into
+the first demo workspace.
 
-## Learn More
+## Tests
 
-To learn more about Next.js, take a look at the following resources:
+```sh
+npm test   # completion scorer + JSON-repair parser (Vitest)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Brand assets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`public/brand/` currently contains **generated placeholder marks** for
+The Design Factory and Digital Media Factory, plus white knockouts of the
+supplied Tourism Fund and Genesis logos. Replace them with the official
+files (same names) when supplied; `scripts/make-brand-assets.js`
+regenerates the placeholders.
