@@ -30,7 +30,7 @@ runs end-to-end. Add real keys to enable them:
 | Variable | Enables |
 |---|---|
 | `ANTHROPIC_API_KEY` | Prompt expansion, copywriting, assistant chat |
-| `GOOGLE_IMAGE_API_KEY` (+ optional `GOOGLE_IMAGE_MODEL`) | Real image generation |
+| `OPENROUTER_API_KEY` (+ `IMAGE_MODEL_DRAFT` / `IMAGE_MODEL_FINAL`) | Real image generation via the router |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Continue with Google |
 | `RESEND_API_KEY` | Real email (otherwise logged to the server console) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage (otherwise `.uploads/`) |

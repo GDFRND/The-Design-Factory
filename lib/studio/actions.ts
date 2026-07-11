@@ -39,6 +39,23 @@ export async function createGeneration(
     };
   }
 
+  // Per-workspace monthly cap (FIX-03 §5) — the load-bearing safety
+  // rail between one prepaid image-credit pool and a runaway loop.
+  const quota = Number(process.env.MONTHLY_GENERATION_QUOTA) || 30;
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const usedThisMonth = await db.generation.count({
+    where: { workspaceId: ctx.workspace.id, createdAt: { gte: monthStart } },
+  });
+  if (usedThisMonth >= quota) {
+    return {
+      ok: false,
+      error:
+        "This workspace has used its monthly creation allowance. It resets on the 1st — or ask support to raise it.",
+    };
+  }
+
   const parsed = briefSchema.safeParse({
     assetType: formData.get("assetType"),
     brief: formData.get("brief"),

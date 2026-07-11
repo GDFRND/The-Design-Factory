@@ -10,7 +10,7 @@ config({ path: path.join(process.cwd(), ".env") });
 
 const REQUIRED = [
   "ANTHROPIC_API_KEY",
-  "GOOGLE_IMAGE_API_KEY",
+  "OPENROUTER_API_KEY",
   "DATABASE_URL",
   "SESSION_SECRET",
   "APP_URL",

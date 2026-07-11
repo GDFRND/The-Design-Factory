@@ -22,9 +22,9 @@ export interface ImageEngine {
 }
 
 export async function getImageEngine(): Promise<ImageEngine> {
-  if (process.env.GOOGLE_IMAGE_API_KEY) {
-    const { NanoBananaEngine } = await import("@/lib/ai/implementations/nano-banana");
-    return new NanoBananaEngine();
+  if (process.env.OPENROUTER_API_KEY) {
+    const { OpenRouterEngine } = await import("@/lib/ai/image/openrouter");
+    return new OpenRouterEngine();
   }
   const { PlaceholderEngine } = await import("@/lib/ai/implementations/placeholder");
   return new PlaceholderEngine();
@@ -52,4 +52,31 @@ export function parseDimensions(outputFormat: string): { width: number; height: 
   const m = outputFormat.match(/(\d{3,4})\s*[×x]\s*(\d{3,4})/);
   if (m) return { width: Number(m[1]), height: Number(m[2]) };
   return { width: 1080, height: 1350 }; // 4:5 default
+}
+
+/* Aspect ratio rides in the request config, never in prompt text
+   (FIX-03 §3). Poster 4:5, story 9:16, LinkedIn 1:1 — driven from
+   outputFormat, snapped to the ratios the image model honours. */
+const SUPPORTED_ASPECTS: [string, number][] = [
+  ["1:1", 1],
+  ["4:5", 4 / 5],
+  ["5:4", 5 / 4],
+  ["3:4", 3 / 4],
+  ["4:3", 4 / 3],
+  ["2:3", 2 / 3],
+  ["3:2", 3 / 2],
+  ["9:16", 9 / 16],
+  ["16:9", 16 / 9],
+];
+
+export function aspectFor(outputFormat: string): string {
+  const { width, height } = parseDimensions(outputFormat);
+  const target = width / height;
+  let best = SUPPORTED_ASPECTS[0];
+  for (const candidate of SUPPORTED_ASPECTS) {
+    if (Math.abs(candidate[1] - target) < Math.abs(best[1] - target)) {
+      best = candidate;
+    }
+  }
+  return best[0];
 }
