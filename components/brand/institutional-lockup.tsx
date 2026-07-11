@@ -9,7 +9,11 @@ import { cn } from "@/lib/utils";
    rule; it endorses, we lead (left).
    Clear space x = ¼ mark height on all sides. Mark never below 40px. */
 
-const TF_ASPECT = 2941 / 852; // supplied Tourism Fund asset
+/* Supplied partner assets (FIX-02 §2): the full-colour mark for light
+   grounds; the plated card for dark chrome — the TF brushmark has white
+   counters that hollow out if keyed, so on dark it rides a Paper plate. */
+const TF_ASPECT = 2000 / 603;
+const TF_PLATED_ASPECT = 2400 / 1003;
 
 export function InstitutionalLockup({
   variant = "positive",
@@ -28,7 +32,7 @@ export function InstitutionalLockup({
   const clearance = mark / 4; // x = ¼ mark height
   const reversed = variant === "reversed";
   const tfHeight = Math.round(mark * 1.4);
-  const tfWidth = Math.round(tfHeight * TF_ASPECT);
+  const tfWidth = Math.round(tfHeight * (reversed ? TF_PLATED_ASPECT : TF_ASPECT));
   const wordmarkSize = Math.max(24, Math.round(mark * 0.55)); // Newsreader never below 24px
 
   return (
@@ -38,7 +42,7 @@ export function InstitutionalLockup({
     >
       <div className="flex items-center" style={{ gap: clearance }}>
         <Image
-          src={reversed ? "/brand/tdf-mark-paper.png" : "/brand/tdf-mark-graphite.png"}
+          src={reversed ? "/brand/tdf/tdf-mark-paper.png" : "/brand/tdf/tdf-mark-graphite.png"}
           alt="The Design Factory"
           width={mark}
           height={mark}
@@ -79,7 +83,7 @@ export function InstitutionalLockup({
           Supported by
         </MonoLabel>
         <Image
-          src={reversed ? "/brand/tourism-fund-paper.png" : "/brand/tourism-fund.png"}
+          src={reversed ? "/brand/partners/tourism-fund-plated.png" : "/brand/partners/tourism-fund.png"}
           alt="Tourism Fund"
           width={tfWidth}
           height={tfHeight}

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { recomputeCompletion } from "@/lib/brand/recompute";
 import { inferPaletteFromPng } from "@/lib/brand/palette";
+import { detectPlatingNeed } from "@/lib/brand/plating";
 import { getSignedUrl, putObject } from "@/lib/storage";
 import { allowedCategories, MAX_UPLOAD_BYTES, sniff } from "@/lib/uploads/magic";
 import { getWorkspaceContext } from "@/lib/workspace";
@@ -56,12 +57,23 @@ export async function POST(request: Request) {
   const key = `ws/${ctx.workspace.id}/brand/${nanoid()}.${type.ext}`;
   await putObject(key, buffer, type.mime);
 
-  // Light inference: a PNG logo contributes a provisional palette.
+  // Light inference: a PNG logo contributes a provisional palette, and
+  // the plating rule (FIX-02 §2.1) flags marks whose white is an ink —
+  // enclosed counters hollow out if keyed, so dark surfaces get a plate.
   let extracted: Record<string, unknown> | undefined;
+  if (kind.data === "LOGO" && type.category === "image") {
+    const { plate, enclosedWhiteRatio } = await detectPlatingNeed(buffer);
+    if (plate) {
+      extracted = {
+        darkSurfaceTreatment: "plate",
+        enclosedWhiteRatio: Number(enclosedWhiteRatio.toFixed(4)),
+      };
+    }
+  }
   if (kind.data === "LOGO" && type.mime === "image/png") {
     const palette = inferPaletteFromPng(buffer);
     if (palette.length) {
-      extracted = { palette };
+      extracted = { ...(extracted ?? {}), palette };
       const existing = await db.brandSystem.findUnique({
         where: { workspaceId: ctx.workspace.id },
       });

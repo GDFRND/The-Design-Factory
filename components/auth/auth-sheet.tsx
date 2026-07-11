@@ -188,7 +188,7 @@ export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
             <div aria-hidden className="grain" />
             <div className="absolute bottom-8 left-8 z-10 flex flex-col gap-4">
               <Image
-                src="/brand/tdf-mark-paper.png"
+                src="/brand/tdf/tdf-mark-paper.png"
                 alt="The Design Factory"
                 width={48}
                 height={48}

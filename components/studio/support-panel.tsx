@@ -96,7 +96,7 @@ export function SupportPanel({
       )}
 
       <MonoLabel size="xs" className="text-muted-foreground">
-        Human support · Digital Media Factory
+        Human support · Jitume
       </MonoLabel>
     </aside>
   );

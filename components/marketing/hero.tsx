@@ -5,10 +5,15 @@ import { MonoLabel } from "@/components/brand/mono-label";
 import { AnimatedHeading } from "@/components/motion/animated-heading";
 import { FadeIn } from "@/components/motion/fade-in";
 import { HeroCycle } from "@/components/motion/hero-cycle";
+import hero1 from "@/public/hero/1.jpg";
+import hero2 from "@/public/hero/2.jpg";
+import hero3 from "@/public/hero/3.jpg";
 
-/* BRIEF §5.1 — full-bleed three-image cycle, glass navbar, bottom-anchored
-   content. No dimming overlay: legibility comes from the reversed lockup
-   and the glass panels. */
+/* BRIEF §5.1 + FIX-02 §3 — full-bleed three-image cycle, glass navbar,
+   bottom-anchored content. The supplied images carry a baked directional
+   Graphite scrim (legibility-verified); no runtime scrim may be added on
+   top. Static imports give every layer an automatic blurDataURL and
+   build-time preload metadata. */
 
 const NAV_LINKS = [
   { href: "#how-it-works", label: "How it works" },
@@ -20,13 +25,16 @@ export function Hero() {
   return (
     <header
       data-theme="dark"
-      className="relative flex min-h-svh flex-col overflow-hidden bg-tdf-950"
+      // Fixed 100svh: the three frames differ in aspect, and a fixed
+      // height keeps the object-cover crop consistent so Ken Burns
+      // never reveals letterboxing (FIX-02 §3.2).
+      className="relative flex h-svh flex-col overflow-hidden bg-tdf-950"
     >
       <HeroCycle
         images={[
-          { src: "/hero/1.jpg", alt: "" },
-          { src: "/hero/2.jpg", alt: "" },
-          { src: "/hero/3.jpg", alt: "" },
+          { src: hero1, alt: "" },
+          { src: hero2, alt: "" },
+          { src: hero3, alt: "" },
         ]}
         progressClassName="bottom-6 right-6 md:bottom-8 md:right-8"
       />
@@ -49,7 +57,7 @@ export function Hero() {
               <InstitutionalLockup variant="reversed" />
             </span>
             <Image
-              src="/brand/tdf-mark-paper.png"
+              src="/brand/tdf/tdf-mark-paper.png"
               alt="The Design Factory"
               width={40}
               height={40}

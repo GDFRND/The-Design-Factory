@@ -19,14 +19,14 @@ export function StudioShell({
           <div className="flex items-center gap-4">
             <Link href="/studio" aria-label="Studio home" className="flex items-center gap-3">
               <Image
-                src="/brand/tdf-mark-graphite.png"
+                src="/brand/tdf/tdf-mark-graphite.png"
                 alt=""
                 width={40}
                 height={40}
                 className="dark:hidden"
               />
               <Image
-                src="/brand/tdf-mark-paper.png"
+                src="/brand/tdf/tdf-mark-paper.png"
                 alt=""
                 width={40}
                 height={40}

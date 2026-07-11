@@ -22,6 +22,7 @@ const db = new PrismaClient({
 
 const UPLOAD_ROOT = path.join(process.cwd(), ".uploads");
 const DEMO_ROOT = path.join(process.cwd(), "public", "demo");
+const BRAND_ROOT = path.join(process.cwd(), "public", "brand");
 
 async function putLocal(key: string, data: Buffer) {
   const file = path.join(UPLOAD_ROOT, key);
@@ -432,7 +433,7 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
   const existingAssets = await db.brandAsset.count({ where: { workspaceId: workspace.id } });
   if (existingAssets === 0) {
     const logoBuffer = await readFile(
-      path.join(DEMO_ROOT, brand.slug, `logo-${brand.slug}.png`)
+      path.join(BRAND_ROOT, brand.slug, `logo-${brand.slug}.png`)
     );
     const detailsBuffer = await readFile(path.join(DEMO_ROOT, brand.slug, "details.png"));
 

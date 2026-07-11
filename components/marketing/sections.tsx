@@ -225,7 +225,7 @@ export function MarketingSections() {
 
       {/* §06 — Human support layer */}
       <Section id="support">
-        <SpecPlate no="§06" name="Human support layer" note="Drawn from the Digital Media Factory" />
+        <SpecPlate no="§06" name="Human support layer" note="Powered by Jitume · Digital Media Factory" />
         <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
           <h2 className="text-h1 max-w-[24ch]">
             A person, assigned to your property.
@@ -233,10 +233,11 @@ export function MarketingSections() {
           <div className="flex max-w-[68ch] flex-col gap-5 text-body text-secondary-foreground">
             <p>
               Every workspace has a Creative Support Assistant — a working
-              designer from the Digital Media Factory who carries five to ten
-              properties. Ask them what to run for Easter. Ask them to review
-              an asset before your manager sees it. They answer inside the
-              platform, against your brand.
+              designer trained through Jitume, the national digital-skills
+              programme, at its Digital Media Factory. Each carries five to
+              ten properties. Ask them what to run for Easter. Ask them to
+              review an asset before your manager sees it. They answer inside
+              the platform, against your brand.
             </p>
           </div>
         </div>
