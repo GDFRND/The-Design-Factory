@@ -14,8 +14,9 @@ import { getSignedUrl, putObject, readObject } from "@/lib/storage";
    sharp, which drops provider metadata (EXIF, XMP) by default; files
    are named gen_{nanoid}.webp with no vendor string anywhere. */
 
+const IMAGE_VARIANTS = Number(process.env.IMAGE_VARIANT_COUNT) || 4;
 const VARIANT_COUNTS: Record<string, number> = {
-  IMAGE: 4,
+  IMAGE: IMAGE_VARIANTS,
   TEXT: 2,
   COMPOSITE: 2,
 };

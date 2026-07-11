@@ -43,3 +43,5 @@ next-env.d.ts
 .pgdata/
 .env
 .uploads/
+
+!.env.example

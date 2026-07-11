@@ -1,0 +1,7 @@
+#!/bin/sh
+# FIX-02 §6 guard rail: block any commit that stages a key-shaped string.
+# Keys live in .env.local only — never in the repo, never in the chat.
+if git diff --cached -U0 | grep -nE 'sk-ant-[A-Za-z0-9_-]{20}|AQ\.[A-Za-z0-9_-]{20}|AIza[A-Za-z0-9_-]{30}'; then
+  echo "✋ A key-shaped string is staged. Unstage it. Keys live in .env.local only."
+  exit 1
+fi

@@ -11,8 +11,13 @@ import {
    endpoint, x-goog-api-key header, image parts returned as inlineData.
    Model id is configuration, not code. */
 
-const MODEL = process.env.GOOGLE_IMAGE_MODEL ?? "gemini-3.1-flash-image";
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+/* Draft model draws the variant gallery (many, cheap); the final model
+   handles refinement of the one you're polishing. IDs verified against
+   the provider's pricing docs 2026-07. */
+const MODEL_DRAFT = process.env.IMAGE_MODEL_DRAFT ?? "gemini-3.1-flash-image";
+const MODEL_FINAL = process.env.IMAGE_MODEL_FINAL ?? "gemini-3-pro-image";
+const endpoint = (model: string) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 type Part =
   | { text: string }
@@ -24,11 +29,11 @@ type ResponsePart = {
   inline_data?: { mime_type?: string; data?: string };
 };
 
-async function callProvider(parts: Part[]): Promise<Buffer[]> {
+async function callProvider(model: string, parts: Part[]): Promise<Buffer[]> {
   const key = process.env.GOOGLE_IMAGE_API_KEY;
   if (!key) throw new Error("image engine not configured");
 
-  const res = await fetch(ENDPOINT, {
+  const res = await fetch(endpoint(model), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -74,7 +79,7 @@ export class NanoBananaEngine implements ImageEngine {
     // One request per variant so each draw is independent.
     const results = await Promise.allSettled(
       Array.from({ length: n }, () =>
-        callProvider([{ text: prompt }, ...referenceParts])
+        callProvider(MODEL_DRAFT, [{ text: prompt }, ...referenceParts])
       )
     );
     const images = results
@@ -89,7 +94,7 @@ export class NanoBananaEngine implements ImageEngine {
     instruction: string,
     brand: BrandDossier
   ): Promise<Buffer[]> {
-    return callProvider([
+    return callProvider(MODEL_FINAL, [
       {
         text: `Edit this marketing asset for ${brand.hotelName}. ${instruction}. Keep everything else unchanged. No watermarks.`,
       },

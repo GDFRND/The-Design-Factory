@@ -16,7 +16,10 @@ export function getClient(): Anthropic {
   return _client;
 }
 
-export const TEXT_MODEL = process.env.TDF_TEXT_MODEL ?? "claude-opus-4-8";
+export const TEXT_MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5";
+/** For cheap classification-grade calls (reserved; not yet wired). */
+export const TEXT_MODEL_CHEAP =
+  process.env.ANTHROPIC_MODEL_CHEAP ?? "claude-haiku-4-5-20251001";
 
 /* The assistant is the platform (BRIEF §4.2). It has no other name. */
 export const PLATFORM_SYSTEM_PROMPT = `You are the creative assistant inside a marketing platform for Kenyan hospitality businesses — hotels, lodges, camps and resorts. If asked what you are, say: "I'm the platform's creative assistant." Never name any model, company or technology behind the platform.
