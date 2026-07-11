@@ -44,6 +44,8 @@ type ApprovalInfo = {
 type Variant = {
   id: string;
   imageUrl: string | null;
+  hasFinal: boolean;
+  downloadedAt: string | null;
   copy: CopyBlocks | null;
   selected: boolean;
   refinements: { instruction: string; at: string }[];
@@ -112,6 +114,9 @@ export function CreationWorkspace({
   );
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const [downloading, setDownloading] = React.useState(false);
+  const [format, setFormat] = React.useState<"webp" | "png">("webp");
+  const [didDownload, setDidDownload] = React.useState(false);
   const [freeText, setFreeText] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [approvalOpen, setApprovalOpen] = React.useState(false);
@@ -199,31 +204,45 @@ export function CreationWorkspace({
     }
   }
 
-  function download() {
-    if (!selected) return;
-    if (selected.imageUrl) {
+  async function download() {
+    if (!selected || downloading) return;
+    setDownloading(true);
+    setError(null);
+    try {
+      // For image assets, the download IS the Pro 2K render (FIX-04 §1):
+      // finalize first (idempotent + double-charge-guarded server-side),
+      // then pull the stored file. TEXT variants skip straight to copy.
+      if (selected.imageUrl && !selected.hasFinal) {
+        const res = await fetch(`/api/variants/${selected.id}/finalize`, {
+          method: "POST",
+        });
+        if (!res.ok) {
+          const json = await res.json().catch(() => null);
+          throw new Error(json?.error ?? "Couldn't prepare the final render.");
+        }
+      }
+
+      // <a download> pointing at the stored object — bytes never flow
+      // through React state.
+      const href = `/api/variants/${selected.id}/download?format=${format}`;
       const a = document.createElement("a");
-      a.href = selected.imageUrl;
-      a.download = `${generation.assetType.toLowerCase().replace(/\s+/g, "-")}.webp`;
+      a.href = href;
+      a.rel = "noopener";
+      document.body.appendChild(a);
       a.click();
-    }
-    if (selected.copy) {
-      const c = selected.copy;
-      const md = [
-        `# ${c.headline}`,
-        c.subhead,
-        "",
-        c.body,
-        ...c.sections.flatMap((s) => ["", `## ${s.heading}`, s.body]),
-        "",
-        `**${c.cta}**`,
-      ].join("\n");
-      const blob = new Blob([md], { type: "text/markdown" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${generation.assetType.toLowerCase().replace(/\s+/g, "-")}-copy.md`;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      a.remove();
+
+      const now = new Date().toISOString();
+      setVariants((vs) =>
+        vs.map((v) =>
+          v.id === selected.id ? { ...v, hasFinal: true, downloadedAt: now } : v
+        )
+      );
+      setDidDownload(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Download failed.");
+    } finally {
+      setDownloading(false);
     }
   }
 
@@ -341,18 +360,69 @@ export function CreationWorkspace({
                   Refine
                 </Button>
               </form>
+              {/* Action bar — Download is the primary (Accent) action
+                  once a variant is selected (FIX-04 §1). */}
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="outline" size="sm" onClick={download}>
-                  <Download aria-hidden /> Download
-                </Button>
                 <Button
                   variant="accent"
+                  size="sm"
+                  onClick={download}
+                  disabled={downloading}
+                  aria-live="polite"
+                >
+                  <Download aria-hidden />
+                  {downloading
+                    ? selected.imageUrl && !selected.hasFinal
+                      ? "Preparing 2K…"
+                      : "Downloading…"
+                    : "Download"}
+                </Button>
+
+                {selected.imageUrl ? (
+                  <div
+                    role="radiogroup"
+                    aria-label="Download format"
+                    className="flex items-center gap-0.5 rounded-full border border-line p-0.5"
+                  >
+                    {(["webp", "png"] as const).map((f) => (
+                      <button
+                        key={f}
+                        role="radio"
+                        aria-checked={format === f}
+                        onClick={() => setFormat(f)}
+                        className={cn(
+                          "rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-180 ease-tdf",
+                          format === f
+                            ? "bg-foreground text-background"
+                            : "text-(--fg-muted) hover:text-foreground"
+                        )}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+
+                <Button variant="ghost" size="sm" onClick={() => refine("Regenerate")} disabled={busy}>
+                  Regenerate
+                </Button>
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setApprovalOpen(true)}
                 >
                   <Send aria-hidden /> Send for approval
                 </Button>
-                {selected.refinements.length ? (
+
+                {selected.downloadedAt ? (
+                  <MonoLabel size="xs" className="text-success">
+                    Downloaded ·{" "}
+                    {new Date(selected.downloadedAt).toLocaleTimeString("en-KE", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </MonoLabel>
+                ) : selected.refinements.length ? (
                   <MonoLabel size="xs" className="text-muted-foreground">
                     {selected.refinements.length} refinement
                     {selected.refinements.length === 1 ? "" : "s"}
@@ -361,10 +431,21 @@ export function CreationWorkspace({
               </div>
             </div>
 
-            {/* Meta strip — format and dimensions only. */}
-            <MonoLabel size="xs" className="text-muted-foreground">
-              {plan?.outputFormat || "Custom format"}
-            </MonoLabel>
+            {/* Meta strip + the loop-closing Done button (FIX-04 §2.2) */}
+            <div className="flex items-center justify-between gap-4">
+              <MonoLabel size="xs" className="text-muted-foreground">
+                {plan?.outputFormat || "Custom format"}
+              </MonoLabel>
+              {didDownload ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push("/dashboard")}
+                >
+                  Done · Back to dashboard
+                </Button>
+              ) : null}
+            </div>
           </>
         ) : phase === "failed" ? (
           <div className="flex flex-col items-start gap-4">
@@ -604,11 +685,13 @@ function ImageGallery({
             type="button"
             onClick={() => onSelect(v.id)}
             aria-pressed={v.id === selectedId}
+            // Selection is the one accent on this screen: a 2px Blueprint
+            // Lt ring (FIX-04 §1). Nothing else competes for it.
             className={cn(
-              "relative aspect-[4/5] overflow-hidden rounded-card border transition-[border-color,box-shadow] duration-180 ease-tdf",
+              "relative aspect-[4/5] overflow-hidden rounded-card outline-none ring-offset-2 ring-offset-(--bg-inset) transition-[box-shadow] duration-180 ease-tdf",
               v.id === selectedId
-                ? "border-(--line-strong) shadow-(--lift-1)"
-                : "border-(--line) hover:border-(--line-strong)"
+                ? "ring-2 ring-(--accent)"
+                : "ring-1 ring-(--line) hover:ring-(--line-strong)"
             )}
           >
             <Image
@@ -622,6 +705,11 @@ function ImageGallery({
             <span className="absolute left-2 top-2 rounded-chip bg-background/85 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-secondary-foreground">
               {String(i + 1).padStart(2, "0")}
             </span>
+            {v.downloadedAt ? (
+              <span className="absolute right-2 top-2 rounded-chip bg-success/85 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-tdf-025">
+                Downloaded
+              </span>
+            ) : null}
           </button>
         ) : null
       )}
@@ -697,7 +785,7 @@ function CompositeView({
   return (
     <div className="flex flex-col gap-4">
       <div className="brand-canvas grid gap-6 p-4 lg:grid-cols-2">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-card border border-line">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-card ring-2 ring-(--accent) ring-offset-2 ring-offset-(--bg-inset)">
           {selected.imageUrl ? (
             <Image
               src={selected.imageUrl}
@@ -742,13 +830,16 @@ function CompositeView({
               onClick={() => onSelect(v.id)}
               aria-pressed={v.id === selected.id}
               className={cn(
-                "rounded-full border px-4 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors duration-180 ease-tdf",
+                "flex items-center gap-1.5 rounded-full border px-4 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors duration-180 ease-tdf",
                 v.id === selected.id
                   ? "border-foreground text-foreground"
                   : "border-line text-muted-foreground hover:text-foreground"
               )}
             >
               Variant {String(i + 1).padStart(2, "0")}
+              {v.downloadedAt ? (
+                <span aria-hidden className="size-1.5 rounded-full bg-success" />
+              ) : null}
             </button>
           ))}
         </div>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CodeInput } from "@/components/auth/code-input";
+import { DemoBrandButtons } from "@/components/auth/demo-brand-buttons";
 import { MonoLabel } from "@/components/brand/mono-label";
 import {
   login,
@@ -96,7 +97,13 @@ function Field({
   );
 }
 
-export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
+export function AuthSheet({
+  mode: initialMode,
+  showDemo = false,
+}: {
+  mode: "login" | "signup";
+  showDemo?: boolean;
+}) {
   const router = useRouter();
   const [mode, setMode] = React.useState<Mode>(initialMode);
   const [step, setStep] = React.useState<Step>("details");
@@ -373,6 +380,8 @@ export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
                 </button>
               </form>
             )}
+
+            {showDemo && mode !== "reset" ? <DemoBrandButtons /> : null}
           </div>
         ) : step === "verification" ? (
           <div className="mt-8 flex flex-col gap-6">
@@ -444,7 +453,7 @@ export function AuthSheet({ mode: initialMode }: { mode: "login" | "signup" }) {
                   : "Email verified. Your workspace is ready."}
               </p>
             </div>
-            <Button variant="accent" className="w-full" onClick={() => router.push("/studio")}>
+            <Button variant="accent" className="w-full" onClick={() => router.push("/dashboard")}>
               Continue to the studio
               <ArrowRight aria-hidden />
             </Button>

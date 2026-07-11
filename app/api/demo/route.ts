@@ -19,5 +19,5 @@ export async function GET(request: Request) {
   }
 
   await createSession(membership.user.id, false);
-  return NextResponse.redirect(new URL("/studio", request.url));
+  return NextResponse.redirect(new URL("/dashboard", request.url));
 }

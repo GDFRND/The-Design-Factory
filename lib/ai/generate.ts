@@ -204,10 +204,68 @@ export async function refineVariant(input: {
   });
 }
 
+/* ------------------------------------------------------ finalize (§FIX-04) */
+
+const FINALIZE_INSTRUCTION =
+  "Reproduce this exact design faithfully at maximum fidelity and resolution. Do not change the composition, colours, layout or any text";
+
+// Double-charge guard: concurrent finalize calls for the same variant
+// share one in-flight render; a finished render is cached on finalKey.
+const inFlightFinalize = new Map<string, Promise<string | null>>();
+
+export async function finalizeVariant(input: {
+  variantId: string;
+  workspaceId: string;
+}): Promise<{ finalKey: string | null }> {
+  const variant = await db.variant.findFirstOrThrow({
+    where: {
+      id: input.variantId,
+      generation: { workspaceId: input.workspaceId },
+    },
+    include: {
+      generation: { include: { workspace: { select: { isDemo: true } } } },
+    },
+  });
+
+  if (variant.finalKey) return { finalKey: variant.finalKey };
+  if (!variant.imageKey) return { finalKey: null }; // TEXT-only variants
+
+  const existing = inFlightFinalize.get(variant.id);
+  if (existing) return { finalKey: await existing };
+
+  const job = (async () => {
+    const base = await readObject(variant.imageKey!).catch(() => null);
+    if (!base) return null;
+    const dossier = await buildBrandDossier(input.workspaceId);
+    const engine = await getImageEngine();
+    const [final] = await engine.refine(base, FINALIZE_INSTRUCTION, dossier);
+    if (!final) return null;
+    const key = await storeImage(
+      input.workspaceId,
+      final,
+      variant.generation.workspace.isDemo
+    );
+    await db.variant.update({
+      where: { id: variant.id },
+      data: { finalKey: key },
+    });
+    return key;
+  })();
+
+  inFlightFinalize.set(variant.id, job);
+  try {
+    return { finalKey: await job };
+  } finally {
+    inFlightFinalize.delete(variant.id);
+  }
+}
+
 /** Serializes a variant for the client, with a signed image URL. */
 export async function serializeVariant(variant: {
   id: string;
   imageKey: string | null;
+  finalKey?: string | null;
+  downloadedAt?: Date | null;
   copy: unknown;
   selected: boolean;
   refinements: unknown;
@@ -216,6 +274,8 @@ export async function serializeVariant(variant: {
   return {
     id: variant.id,
     imageUrl: variant.imageKey ? await getSignedUrl(variant.imageKey) : null,
+    hasFinal: Boolean(variant.finalKey),
+    downloadedAt: variant.downloadedAt?.toISOString() ?? null,
     copy: (variant.copy as CopyBlocks | null) ?? null,
     selected: variant.selected,
     refinements: (variant.refinements as { instruction: string; at: string }[]) ?? [],

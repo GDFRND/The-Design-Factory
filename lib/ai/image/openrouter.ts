@@ -68,15 +68,20 @@ type UserContent =
 async function callOnce(
   model: string,
   content: UserContent,
-  aspect: string
+  aspect: string,
+  size?: "1K" | "2K" | "4K"
 ): Promise<GenImage[]> {
   const res = await getRouter().chat.completions.create({
     model,
     messages: [{ role: "user", content: content as never }],
     // Router extensions, not in the OpenAI types:
     // modalities opts into image output; image_config carries the
-    // aspect ratio (not baked into prompt text).
-    ...({ modalities: ["image", "text"], image_config: { aspect_ratio: aspect } } as object),
+    // aspect ratio (not baked into prompt text) and, on the Pro tier,
+    // the requested output size.
+    ...({
+      modalities: ["image", "text"],
+      image_config: { aspect_ratio: aspect, ...(size ? { image_size: size } : {}) },
+    } as object),
   });
 
   const msg = res.choices[0]?.message as RouterMessage | undefined;
@@ -150,24 +155,26 @@ export class OpenRouterEngine implements ImageEngine {
     // The selected draft rides along as the input image, on the FINAL
     // model — the output must resemble the thumbnail the user picked.
     const aspect = await aspectOfBuffer(base);
-    const images = await withRetry(() =>
-      callOnce(
-        MODEL_FINAL,
-        [
-          {
-            type: "text",
-            text: `Edit this marketing asset for ${brand.hotelName}. ${instruction}. Keep the composition, layout and all other elements unchanged. Render at high resolution. No watermarks.`,
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/webp;base64,${base.toString("base64")}`,
-            },
-          },
-        ],
-        aspect
-      )
-    );
-    return images.map((i) => i.bytes);
+    const content: UserContent = [
+      {
+        type: "text",
+        text: `Edit this marketing asset for ${brand.hotelName}. ${instruction}. Keep the composition, layout and all other elements unchanged. No watermarks.`,
+      },
+      {
+        type: "image_url",
+        image_url: {
+          url: `data:image/webp;base64,${base.toString("base64")}`,
+        },
+      },
+    ];
+    // Ask the Pro tier for 2K; if the routed provider rejects the size
+    // hint, fall back to the default resolution rather than failing.
+    try {
+      const images = await callOnce(MODEL_FINAL, content, aspect, "2K");
+      return images.map((i) => i.bytes);
+    } catch {
+      const images = await withRetry(() => callOnce(MODEL_FINAL, content, aspect));
+      return images.map((i) => i.bytes);
+    }
   }
 }

@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { StudioShell } from "@/components/studio/studio-shell";
 import { CreationWorkspace } from "@/components/studio/creation-workspace";
 import { serializeVariant } from "@/lib/ai/generate";
 import { db } from "@/lib/db";
@@ -68,7 +67,7 @@ export default async function GenerationPage({
   const hasPlan = Boolean(stored && stored.keyMessage !== undefined);
 
   return (
-    <StudioShell hotelName={ctx.workspace.hotelName}>
+    <>
       <CreationWorkspace
         generation={{
           id: generation.id,
@@ -93,6 +92,6 @@ export default async function GenerationPage({
             : null,
         }}
       />
-    </StudioShell>
+    </>
   );
 }

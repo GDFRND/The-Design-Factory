@@ -109,5 +109,5 @@ export async function GET(request: Request) {
   }
 
   await createSession(user.id);
-  return NextResponse.redirect(new URL("/studio", request.url));
+  return NextResponse.redirect(new URL("/dashboard", request.url));
 }

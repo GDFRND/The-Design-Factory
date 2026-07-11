@@ -20,6 +20,8 @@ model User {
   name            String
   phone           String?
   emailVerifiedAt DateTime?
+  // Seeded demo account — a production deployment disables these logins.
+  isDemo          Boolean   @default(false)
   createdAt       DateTime  @default(now())
 
   memberships     Membership[]
@@ -232,6 +234,9 @@ model Variant {
   id           String     @id @default(cuid())
   generationId String
   imageKey     String?
+  // 2K final render, cached so a second download never re-bills (FIX-04 §1)
+  finalKey     String?
+  downloadedAt DateTime?
   copy         Json?
   selected     Boolean    @default(false)
   refinements  Json[]

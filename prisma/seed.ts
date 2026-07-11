@@ -15,6 +15,8 @@ import { nanoid } from "nanoid";
 import sharp from "sharp";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { DEMO_BRANDS } from "@/lib/demo/brands";
+import { appEnv } from "@/lib/env";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -354,17 +356,26 @@ const OLD_DEMO_EMAILS = [
 ];
 
 async function seedBrand(brand: DemoBrand, csaId: string) {
-  const passwordHash = await argon2.hash("demo-password-2026", { type: argon2.argon2id });
+  // The owner login uses the documented FIX-04 §3.1 credentials, hashed
+  // with argon2 like any real account and flagged isDemo. The demo
+  // password is per-brand and lives in the shared registry.
+  const demoLogin = DEMO_BRANDS.find((b) => b.slug === brand.slug);
+  const ownerEmail = demoLogin?.email ?? brand.owner.email;
+  const passwordHash = await argon2.hash(
+    demoLogin?.password ?? "demo-password-2026",
+    { type: argon2.argon2id }
+  );
 
   const owner = await db.user.upsert({
-    where: { email: brand.owner.email },
+    where: { email: ownerEmail },
     create: {
-      email: brand.owner.email,
+      email: ownerEmail,
       name: brand.owner.name,
       passwordHash,
       emailVerifiedAt: new Date(),
+      isDemo: true,
     },
-    update: {},
+    update: { passwordHash, isDemo: true },
   });
 
   const workspace = await db.workspace.upsert({
@@ -385,7 +396,7 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
     create: {
       userId: owner.id,
       workspaceId: workspace.id,
-      role: "HOTEL_APPROVER",
+      role: "HOTEL_MARKETER",
       isOwner: true,
     },
     update: {},
@@ -527,9 +538,27 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
 }
 
 async function main() {
-  // TDF-06 replaces the fictional placeholders entirely.
-  await db.workspace.deleteMany({ where: { slug: { in: OLD_DEMO_SLUGS } } });
-  await db.user.deleteMany({ where: { email: { in: OLD_DEMO_EMAILS } } });
+  // Demo passwords are weak on purpose (FIX-04 §3.1) — never seed prod.
+  if (appEnv() === "production") {
+    throw new Error(
+      "Refusing to seed demo data with APP_ENV=production. Use APP_ENV=demo for a demo deployment."
+    );
+  }
+
+  // TDF-06 replaced the fictional placeholders; clear any older owner
+  // accounts (both the fictional set and the pre-FIX-04 generated
+  // emails) plus the demo workspaces so brands re-seed cleanly with the
+  // documented demo@*.co.ke logins and a fresh pending approval.
+  const staleEmails = [
+    ...OLD_DEMO_EMAILS,
+    "wanjiku@demo.thedesignfactory.local",
+    "daniel@demo.thedesignfactory.local",
+    "amani@demo.thedesignfactory.local",
+  ];
+  await db.workspace.deleteMany({
+    where: { slug: { in: BRANDS.map((b) => b.slug) } },
+  });
+  await db.user.deleteMany({ where: { email: { in: staleEmails } } });
 
   const csaPassword = await argon2.hash("demo-password-2026", { type: argon2.argon2id });
   const csa = await db.user.upsert({

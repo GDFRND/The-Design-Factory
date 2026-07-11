@@ -9,6 +9,8 @@ import { sendEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession, getCurrentUser } from "@/lib/auth/session";
+import { DEMO_BRANDS } from "@/lib/demo/brands";
+import { demoFeaturesEnabled } from "@/lib/env";
 
 /* Server actions for the auth sheet (BRIEF §5.3).
    Errors are generic on purpose — they never reveal whether an email
@@ -188,7 +190,7 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
   }
 
   await createSession(user.id, remember ?? true);
-  redirect("/studio");
+  redirect("/dashboard");
 }
 
 // ------------------------------------------------------- verification
@@ -300,6 +302,30 @@ export async function resetPassword(_prev: AuthState, formData: FormData): Promi
 export async function logout() {
   await destroySession();
   redirect("/");
+}
+
+/* Demo brand one-click sign-in (FIX-04 §3.2). Types the seeded
+   credentials for you server-side — a real login, no session bypass,
+   scoped to that workspace like any other. Gated: never available when
+   APP_ENV=production, and only signs in accounts flagged isDemo. */
+export async function enterAsDemoBrand(slug: string) {
+  if (!demoFeaturesEnabled()) redirect("/signin");
+
+  const brand = DEMO_BRANDS.find((b) => b.slug === slug);
+  if (!brand) redirect("/signin");
+
+  const user = await db.user.findUnique({ where: { email: brand.email } });
+  if (
+    !user?.isDemo ||
+    !user.passwordHash ||
+    !user.emailVerifiedAt ||
+    !(await verifyPassword(user.passwordHash, brand.password))
+  ) {
+    redirect("/signin?error=demo-unavailable");
+  }
+
+  await createSession(user.id, false);
+  redirect("/dashboard");
 }
 
 export async function currentUserName() {

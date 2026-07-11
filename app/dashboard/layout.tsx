@@ -2,12 +2,10 @@ import { AppBar } from "@/components/studio/app-bar";
 import { getChrome } from "@/lib/workspace-chrome";
 import { requireWorkspace } from "@/lib/workspace";
 
-/* TDF-06 §1 + FIX-04 §2.1: /studio/** runs dark-first, and the sticky
-   app bar lives here so it is declared once for every authenticated
-   studio route rather than per page. One Ash orb, grain, content above
-   both. */
+/* The dashboard shares the dark-first chrome and the sticky app bar
+   with /studio (FIX-04 §2). */
 
-export default async function StudioLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
