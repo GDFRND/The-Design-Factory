@@ -179,7 +179,7 @@ export function AuthSheet({
           aria-describedby={undefined}
           className="fixed inset-0 z-50 grid overflow-hidden bg-raised text-foreground shadow-(--lift-3) duration-260 ease-tdf data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-4 md:inset-auto md:left-1/2 md:top-1/2 md:max-h-[92svh] md:w-[min(880px,92vw)] md:-translate-x-1/2 md:-translate-y-1/2 md:grid-cols-[45fr_55fr] md:rounded-panel"
         >
-          {/* Left column — imagery, orb, mark, the page's one italic phrase */}
+          {/* Left column — imagery, mark, the page's one italic phrase */}
           <div className="relative hidden overflow-hidden md:block">
             <Image
               src="/hero/1.jpg"
@@ -188,11 +188,6 @@ export function AuthSheet({
               sizes="(min-width: 768px) 25rem, 0vw"
               className="object-cover"
             />
-            <div
-              aria-hidden
-              className="orb orb--blueprint bottom-[-25%] left-[-30%] size-[120%] mix-blend-screen opacity-45"
-            />
-            <div aria-hidden className="grain" />
             <div className="absolute bottom-8 left-8 z-10 flex flex-col gap-4">
               <Image
                 src="/brand/tdf/tdf-mark-paper.png"

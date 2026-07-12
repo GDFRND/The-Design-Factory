@@ -39,13 +39,8 @@ export function Hero() {
         progressClassName="bottom-6 right-6 md:bottom-8 md:right-8"
       />
 
-      {/* TDF-06 §3.1 — a pool of cool light for the headline to sit in.
-          A brand object, not a scrim. */}
-      <div
-        aria-hidden
-        className="orb orb--blueprint bottom-[-20%] left-[-15%] z-[5] size-[75vmin] mix-blend-screen opacity-45"
-      />
-      <div aria-hidden className="grain z-[6]" />
+      {/* Legibility comes from the baked directional scrim on the hero
+          images (FIX-02 §3); no overlay tint. */}
 
       {/* Navbar */}
       <div className="relative z-10 px-6 pt-6 md:px-12 lg:px-16">
