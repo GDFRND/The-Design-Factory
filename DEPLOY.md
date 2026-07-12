@@ -104,9 +104,10 @@ Gated to `APP_ENV != production` — also on the sign-in sheet as one-click
 
 ## Notes
 
-- **Migrations after the first deploy:** schema changes apply automatically on
-  every deploy via the pinned build command. To apply them by hand, run
-  `prisma migrate deploy` locally against the Session-mode `DATABASE_URL`.
+- **Migrations:** the initial schema is already applied to the Supabase
+  project (both migrations recorded in `_prisma_migrations`), so the build is
+  just `next build`. For future schema changes, run `prisma migrate deploy`
+  locally against the Session-mode `DATABASE_URL` before deploying.
 - **Storage precedence** (`lib/storage.ts`): Supabase when its two vars are
   set, else Vercel Blob, else local `.uploads/`. The deployed app uses
   Supabase; the bucket is private and the browser only sees signed URLs.
