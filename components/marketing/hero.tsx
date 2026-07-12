@@ -4,16 +4,11 @@ import { InstitutionalLockup } from "@/components/brand/institutional-lockup";
 import { MonoLabel } from "@/components/brand/mono-label";
 import { AnimatedHeading } from "@/components/motion/animated-heading";
 import { FadeIn } from "@/components/motion/fade-in";
-import { HeroCycle } from "@/components/motion/hero-cycle";
 import hero1 from "@/public/hero/1.jpg";
-import hero2 from "@/public/hero/2.jpg";
-import hero3 from "@/public/hero/3.jpg";
 
-/* BRIEF §5.1 + FIX-02 §3 — full-bleed three-image cycle, glass navbar,
-   bottom-anchored content. The supplied images carry a baked directional
-   Graphite scrim (legibility-verified); no runtime scrim may be added on
-   top. Static imports give every layer an automatic blurDataURL and
-   build-time preload metadata. */
+/* Full-bleed static hero image, glass navbar, bottom-anchored content.
+   No cycle, no motion, no overlay — just the background photograph (its
+   legibility scrim is baked into the file, FIX-02 §3). */
 
 const NAV_LINKS = [
   { href: "#how-it-works", label: "How it works" },
@@ -25,18 +20,17 @@ export function Hero() {
   return (
     <header
       data-theme="dark"
-      // Fixed 100svh: the three frames differ in aspect, and a fixed
-      // height keeps the object-cover crop consistent so Ken Burns
-      // never reveals letterboxing (FIX-02 §3.2).
       className="relative flex h-svh flex-col overflow-hidden bg-tdf-950"
     >
-      <HeroCycle
-        images={[
-          { src: hero1, alt: "" },
-          { src: hero2, alt: "" },
-          { src: hero3, alt: "" },
-        ]}
-        progressClassName="bottom-6 right-6 md:bottom-8 md:right-8"
+      {/* Just the background image — static, no cycle or overlay. */}
+      <Image
+        src={hero1}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        placeholder="blur"
+        className="object-cover"
       />
 
       {/* Legibility comes from the baked directional scrim on the hero
