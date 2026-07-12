@@ -13,23 +13,23 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import argon2 from "argon2";
 import { nanoid } from "nanoid";
 import sharp from "sharp";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { DEMO_BRANDS } from "@/lib/demo/brands";
 import { appEnv } from "@/lib/env";
+import { putObject } from "@/lib/storage";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
-const UPLOAD_ROOT = path.join(process.cwd(), ".uploads");
 const DEMO_ROOT = path.join(process.cwd(), "public", "demo");
 const BRAND_ROOT = path.join(process.cwd(), "public", "brand");
 
-async function putLocal(key: string, data: Buffer) {
-  const file = path.join(UPLOAD_ROOT, key);
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, data);
+/* Route demo assets through the app's storage layer, so the same seed
+   populates .uploads/ locally and Supabase Storage in the cloud. */
+async function putLocal(key: string, data: Buffer, contentType: string) {
+  await putObject(key, data, contentType);
 }
 
 function esc(s: string) {
@@ -449,9 +449,9 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
     const detailsBuffer = await readFile(path.join(DEMO_ROOT, brand.slug, "details.png"));
 
     const logoKey = `ws/${workspace.id}/brand/${nanoid()}.png`;
-    await putLocal(logoKey, logoBuffer);
+    await putLocal(logoKey, logoBuffer, "image/png");
     const guideKey = `ws/${workspace.id}/brand/${nanoid()}.png`;
-    await putLocal(guideKey, detailsBuffer);
+    await putLocal(guideKey, detailsBuffer, "image/png");
 
     await db.brandAsset.createMany({
       data: [
@@ -509,7 +509,11 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
           ink: p.ink,
         });
         imageKey = `ws/${workspace.id}/gen/gen_${nanoid()}.webp`;
-        await putLocal(imageKey, await sharp(Buffer.from(svg)).webp({ quality: 88 }).toBuffer());
+        await putLocal(
+          imageKey,
+          await sharp(Buffer.from(svg)).webp({ quality: 88 }).toBuffer(),
+          "image/webp"
+        );
       }
       const copy = g.copies ? g.copies[Math.min(i, g.copies.length - 1)] : null;
       const variant = await db.variant.create({
