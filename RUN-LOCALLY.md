@@ -1,68 +1,70 @@
-# Run The Design Factory on any computer
+# How to run the demo (plain-English guide)
 
-This runs the whole app — website **and** database — on one machine, no
-internet service required. The only thing the computer needs is **Node.js**.
-No Docker, no database to install.
+This runs the whole app on one computer. Nothing to sign up for, no website
+to configure. Just follow the steps.
 
-## 1. Install Node.js (one time)
+---
 
-Download the **LTS** version from **https://nodejs.org** and run the
-installer. (Works on Mac and Windows.)
+## Step 1 — Install Node.js (only needed once)
 
-## 2. Get the project folder
+Go to **https://nodejs.org** and click the big green **LTS** button to
+download it. Open the downloaded file and click through the installer like any
+normal app (Continue → Install). That's it — you never open it again.
 
-Either unzip the `the-design-factory` folder someone shared with you, **or**
-clone it: `git clone <repo-url>`.
+## Step 2 — Unzip the folder
 
-## 3. Open a terminal in the folder
+Double-click the `the-design-factory-demo.zip` you were given. It becomes a
+folder called **the-design-factory**. Open that folder.
 
-- **Mac:** right-click the folder → *New Terminal at Folder*.
-- **Windows:** open the folder, click the address bar, type `cmd`, press Enter.
+## Step 3 — Start the demo (double-click)
 
-## 4. Run two commands
+Inside the folder:
 
-```sh
-npm install
-npm run demo
-```
+- **On a Mac:** find the file called **`Start-Demo.command`**. The first time,
+  **right-click it → Open** (a warning may appear — click **Open** again). After
+  that first time you can just double-click it.
+- **On Windows:** double-click **`Start-Demo.bat`**.
 
-`npm install` takes a couple of minutes the first time (it downloads the app
-*and* a self-contained database). `npm run demo` then sets everything up and
-starts the site.
+A black window opens and text starts scrolling. **That's normal — it's setting
+things up.** The first time takes a few minutes (it's downloading what it
+needs). Leave the window alone until it settles.
 
-## 5. Open the site
+## Step 4 — Open the site
 
-Go to **http://localhost:3000** in your browser.
+When the black window shows a line like **`Open http://localhost:3000`** and
+stops scrolling, open your web browser (Chrome, Safari, Edge…) and go to:
 
-- Click **Explore demo**, or open **Sign in** and use a brand button:
-  **Enter as Rhino Fort**, **Enter as The Regent**, **Enter as El Mara**.
-- Or sign in manually:
+### **http://localhost:3000**
 
-  | Brand | Email | Password |
-  |---|---|---|
-  | Rhino Fort Hotel | `demo@rhinofort.co.ke` | `RhinoFort2026` |
-  | The Regent Hotel & Travel | `demo@theregent.co.ke` | `Regent2026` |
-  | El Mara Hotels & Resorts | `demo@elmara.co.ke` | `ElMara2026` |
+The site is now running. Click **Explore demo**, or open **Sign in** and pick a
+brand: **Enter as Rhino Fort**, **The Regent**, or **El Mara**.
 
-**To stop:** press `Ctrl+C` in the terminal.
-**To run again later:** just `npm run demo` (skip `npm install`).
+You can also sign in by hand:
 
-## Real AI (optional)
+| Brand | Email | Password |
+|---|---|---|
+| Rhino Fort Hotel | `demo@rhinofort.co.ke` | `RhinoFort2026` |
+| The Regent Hotel & Travel | `demo@theregent.co.ke` | `Regent2026` |
+| El Mara Hotels & Resorts | `demo@elmara.co.ke` | `ElMara2026` |
 
-Out of the box the app uses built-in offline stand-ins, so the demo works
-with no keys. To turn on real generation, open the **`.env`** file (created on
-first run) and paste your keys after `ANTHROPIC_API_KEY=` and
-`OPENROUTER_API_KEY=`, then run `npm run demo` again.
+---
 
-## Making a copy to hand to someone else
+## Stopping and restarting
 
-Zip the folder **without** the big regenerated bits:
+- **To stop:** close the black window.
+- **To run it again another day:** just double-click `Start-Demo.command`
+  (Mac) or `Start-Demo.bat` (Windows) again. It's much faster the second time.
 
-```sh
-# from inside the folder
-zip -r ../the-design-factory-demo.zip . \
-  -x "node_modules/*" ".next/*" ".pgdata/*" ".git/*" ".uploads/*"
-```
+## Turning on real AI (optional)
 
-Send that zip. The other person unzips it and follows steps 1–5. Everything
-they need (including the database) is rebuilt by `npm install` + `npm run demo`.
+The demo works out of the box using built-in stand-ins, so you don't need any
+keys. If you want real AI-generated images and text, open the file named
+**`.env`** inside the folder (with TextEdit or Notepad) and paste your keys
+after `ANTHROPIC_API_KEY=` and `OPENROUTER_API_KEY=`, then start the demo again.
+
+## If something goes wrong
+
+- **"Node.js isn't installed"** in the black window → do Step 1, then try again.
+- **The browser says it can't connect** → the black window is probably still
+  setting up; wait for the `http://localhost:3000` line, then refresh.
+- Still stuck? Send a photo of the black window's last few lines.
