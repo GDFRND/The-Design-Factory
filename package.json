@@ -11,7 +11,8 @@
     "db:start": "node scripts/dev-db.mjs start",
     "db:stop": "node scripts/dev-db.mjs stop",
     "test": "vitest run",
-    "seed": "tsx --conditions react-server prisma/seed.ts"
+    "seed": "tsx --conditions react-server prisma/seed.ts",
+    "demo": "node scripts/demo.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -57,5 +58,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
