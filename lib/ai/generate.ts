@@ -21,39 +21,15 @@ const VARIANT_COUNTS: Record<string, number> = {
   COMPOSITE: 2,
 };
 
-/* TDF-06 §4: every asset generated for a demo workspace is watermarked
-   DEMO at 40% — a Tourism Fund board must never mistake a demo asset
-   for an approved one. */
-function demoWatermark(width: number): Buffer {
-  const fs = Math.max(24, Math.round(width * 0.05));
-  return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${fs * 2}">
-      <text x="${width - fs * 0.6}" y="${fs * 1.3}" text-anchor="end"
-        font-family="Helvetica, Arial, sans-serif" font-size="${fs}"
-        font-weight="700" letter-spacing="${fs * 0.2}"
-        fill="#FAFAF9" opacity="0.4">DEMO</text>
-    </svg>`
-  );
+/* Re-encode to WebP with a clean encoder — this also strips EXIF and
+   any provider metadata as a side effect (FIX-03 §4). */
+async function toCleanWebp(image: Buffer): Promise<Buffer> {
+  return sharp(image).webp({ quality: 88 }).toBuffer();
 }
 
-async function toCleanWebp(image: Buffer, isDemo: boolean): Promise<Buffer> {
-  let pipeline = sharp(image);
-  if (isDemo) {
-    const meta = await pipeline.metadata();
-    pipeline = pipeline.composite([
-      { input: demoWatermark(meta.width ?? 1080), gravity: "southeast" },
-    ]);
-  }
-  return pipeline.webp({ quality: 88 }).toBuffer();
-}
-
-async function storeImage(
-  workspaceId: string,
-  image: Buffer,
-  isDemo: boolean
-): Promise<string> {
+async function storeImage(workspaceId: string, image: Buffer): Promise<string> {
   const key = `ws/${workspaceId}/gen/gen_${nanoid()}.webp`;
-  await putObject(key, await toCleanWebp(image, isDemo), "image/webp");
+  await putObject(key, await toCleanWebp(image), "image/webp");
   return key;
 }
 
@@ -122,7 +98,7 @@ export async function produceVariants(generationId: string, workspaceId: string)
   for (let i = 0; i < count; i++) {
     const imageKey =
       wantsImages && images[i]
-        ? await storeImage(workspaceId, images[i], generation.workspace.isDemo)
+        ? await storeImage(workspaceId, images[i])
         : null;
     const copy = wantsCopy ? copies[Math.min(i, copies.length - 1)] : null;
     variants.push(
@@ -174,11 +150,7 @@ export async function refineVariant(input: {
       const engine = await getImageEngine();
       const [refined] = await engine.refine(base, input.instruction, dossier);
       if (refined) {
-        imageKey = await storeImage(
-          input.workspaceId,
-          refined,
-          variant.generation.workspace.isDemo
-        );
+        imageKey = await storeImage(input.workspaceId, refined);
       }
     }
   }
@@ -240,11 +212,7 @@ export async function finalizeVariant(input: {
     const engine = await getImageEngine();
     const [final] = await engine.refine(base, FINALIZE_INSTRUCTION, dossier);
     if (!final) return null;
-    const key = await storeImage(
-      input.workspaceId,
-      final,
-      variant.generation.workspace.isDemo
-    );
+    const key = await storeImage(input.workspaceId, final);
     await db.variant.update({
       where: { id: variant.id },
       data: { finalKey: key },

@@ -1,7 +1,6 @@
 /* Demo seed (TDF-06 §4 — replaces BRIEF §6). Three real brands:
    Rhino Fort (IMAGE), The Regent (TEXT), El Mara (COMPOSITE).
-   Everything is isDemo; every generated demo image carries a DEMO
-   watermark at 40%. Idempotent: keyed on slugs and emails.
+   Workspaces are flagged isDemo. Idempotent: keyed on slugs and emails.
 
    Run: npx tsx --conditions react-server prisma/seed.ts
    Requires: node scripts/prep-demo-brands.js <source-dir> first
@@ -36,7 +35,7 @@ function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/* Brand-palette layout comp with the DEMO watermark baked in. */
+/* Brand-palette layout comp for the seeded sample asset. */
 function demoPoster(opts: {
   hotel: string;
   line: string;
@@ -57,7 +56,6 @@ function demoPoster(opts: {
     <text x="90" y="1060" font-family="Georgia, serif" font-size="54" fill="${accent}">${esc(price)}</text>
     <rect x="90" y="1150" rx="45" width="460" height="90" fill="${ink}"/>
     <text x="130" y="1208" font-family="Helvetica, Arial" font-size="34" fill="${bg}">${esc(cta)}</text>
-    <text x="1000" y="90" text-anchor="end" font-family="Helvetica, Arial" font-size="52" font-weight="700" letter-spacing="10" fill="#FAFAF9" opacity="0.4">DEMO</text>
   </svg>`;
 }
 
