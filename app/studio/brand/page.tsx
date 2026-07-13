@@ -51,7 +51,7 @@ export default async function BrandPage() {
   };
 
   return (
-    <>
+    <div data-theme="light" className="flex-1 bg-background text-foreground">
       <main className="container-tdf flex flex-col gap-12 py-12">
         <div className="flex flex-col gap-3">
           <h1 className="text-h1">Build your brand system</h1>
@@ -107,6 +107,6 @@ export default async function BrandPage() {
           </div>
         </section>
       </main>
-    </>
+    </div>
   );
 }

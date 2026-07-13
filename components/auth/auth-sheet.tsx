@@ -175,7 +175,7 @@ export function AuthSheet({
           <div aria-hidden className="grain" />
         </DialogPrimitive.Overlay>
         <DialogPrimitive.Content
-          data-theme="dark"
+          data-theme="light"
           aria-describedby={undefined}
           className="fixed inset-0 z-50 grid overflow-hidden bg-raised text-foreground shadow-(--lift-3) duration-260 ease-tdf data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-4 md:inset-auto md:left-1/2 md:top-1/2 md:max-h-[92svh] md:w-[min(880px,92vw)] md:-translate-x-1/2 md:-translate-y-1/2 md:grid-cols-[45fr_55fr] md:rounded-panel"
         >
