@@ -314,18 +314,30 @@ export async function enterAsDemoBrand(slug: string) {
   const brand = DEMO_BRANDS.find((b) => b.slug === slug);
   if (!brand) redirect("/signin");
 
-  const user = await db.user.findUnique({ where: { email: brand.email } });
-  if (
-    !user?.isDemo ||
-    !user.passwordHash ||
-    !user.emailVerifiedAt ||
-    !(await verifyPassword(user.passwordHash, brand.password))
-  ) {
-    redirect("/signin?error=demo-unavailable");
+  // All database work stays inside the try so a stopped database becomes
+  // a friendly redirect, not an unhandled crash. Redirects run after,
+  // since redirect() itself throws a control-flow signal.
+  let outcome: "ok" | "invalid" | "db-error" = "db-error";
+  try {
+    const user = await db.user.findUnique({ where: { email: brand.email } });
+    if (
+      user?.isDemo &&
+      user.passwordHash &&
+      user.emailVerifiedAt &&
+      (await verifyPassword(user.passwordHash, brand.password))
+    ) {
+      await createSession(user.id, false);
+      outcome = "ok";
+    } else {
+      outcome = "invalid";
+    }
+  } catch {
+    outcome = "db-error";
   }
 
-  await createSession(user.id, false);
-  redirect("/dashboard");
+  if (outcome === "ok") redirect("/dashboard");
+  if (outcome === "invalid") redirect("/signin?error=demo-unavailable");
+  redirect("/signin?error=database-unavailable");
 }
 
 export async function currentUserName() {
