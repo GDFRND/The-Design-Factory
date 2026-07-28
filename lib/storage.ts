@@ -54,7 +54,13 @@ export async function putObject(
 ): Promise<void> {
   if (useSupabase()) {
     const sb = await supabase();
-    const { error } = await sb.storage.from(BUCKET).upload(key, data, {
+    // sharp's .toBuffer() hands back a Buffer over native/external memory.
+    // On some runtimes (Vercel's fetch) that body is serialised as *text*
+    // on upload, which UTF-8-mangles every byte >= 0x80 into EF BF BD and
+    // corrupts the stored image. Copying into a fresh, standard-backed
+    // Uint8Array forces the same raw-bytes path that plain buffers take.
+    const bytes = new Uint8Array(data);
+    const { error } = await sb.storage.from(BUCKET).upload(key, bytes, {
       contentType,
       upsert: true,
     });

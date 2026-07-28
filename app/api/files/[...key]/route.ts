@@ -27,7 +27,20 @@ export async function GET(
     return new NextResponse(null, { status: 404 });
   }
 
-  const type = sniff(data)?.mime ?? "application/octet-stream";
+  // Prefer the key's extension (deterministic) and fall back to magic-byte
+  // sniffing; without this a webp whose header is off by a byte would be
+  // served as octet-stream and refuse to render in <img>.
+  const EXT_MIME: Record<string, string> = {
+    webp: "image/webp",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    svg: "image/svg+xml",
+    pdf: "application/pdf",
+  };
+  const ext = key.split(".").pop()?.toLowerCase() ?? "";
+  const type = EXT_MIME[ext] ?? sniff(data)?.mime ?? "application/octet-stream";
   return new NextResponse(new Uint8Array(data), {
     headers: {
       "Content-Type": type,
