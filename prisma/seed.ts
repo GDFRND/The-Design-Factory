@@ -10,13 +10,11 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import argon2 from "argon2";
-import { nanoid } from "nanoid";
 import sharp from "sharp";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { DEMO_BRANDS } from "@/lib/demo/brands";
 import { appEnv } from "@/lib/env";
-import { putObject } from "@/lib/storage";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -24,12 +22,6 @@ const db = new PrismaClient({
 
 const DEMO_ROOT = path.join(process.cwd(), "public", "demo");
 const BRAND_ROOT = path.join(process.cwd(), "public", "brand");
-
-/* Route demo assets through the app's storage layer, so the same seed
-   populates .uploads/ locally and Supabase Storage in the cloud. */
-async function putLocal(key: string, data: Buffer, contentType: string) {
-  await putObject(key, data, contentType);
-}
 
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -441,22 +433,19 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
   // Real brand material: the keyed logo and the actual guidelines sheet.
   const existingAssets = await db.brandAsset.count({ where: { workspaceId: workspace.id } });
   if (existingAssets === 0) {
+    // Reference the committed public files directly (served statically),
+    // so the demo needs no storage backend to show brand material.
     const logoBuffer = await readFile(
       path.join(BRAND_ROOT, brand.slug, `logo-${brand.slug}.png`)
     );
     const detailsBuffer = await readFile(path.join(DEMO_ROOT, brand.slug, "details.png"));
-
-    const logoKey = `ws/${workspace.id}/brand/${nanoid()}.png`;
-    await putLocal(logoKey, logoBuffer, "image/png");
-    const guideKey = `ws/${workspace.id}/brand/${nanoid()}.png`;
-    await putLocal(guideKey, detailsBuffer, "image/png");
 
     await db.brandAsset.createMany({
       data: [
         {
           workspaceId: workspace.id,
           kind: "LOGO",
-          storageKey: logoKey,
+          storageKey: `brand/${brand.slug}/logo-${brand.slug}.png`,
           mime: "image/png",
           bytes: logoBuffer.length,
           extracted: { palette: brand.swatches },
@@ -464,7 +453,7 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
         {
           workspaceId: workspace.id,
           kind: "GUIDELINES",
-          storageKey: guideKey,
+          storageKey: `demo/${brand.slug}/details.png`,
           mime: "image/png",
           bytes: detailsBuffer.length,
           extracted: { source: "brand sheet" },
@@ -506,11 +495,14 @@ async function seedBrand(brand: DemoBrand, csaId: string) {
           accent: p.accent,
           ink: p.ink,
         });
-        imageKey = `ws/${workspace.id}/gen/gen_${nanoid()}.webp`;
-        await putLocal(
-          imageKey,
-          await sharp(Buffer.from(svg)).webp({ quality: 88 }).toBuffer(),
-          "image/webp"
+        // Write the sample poster as a committed public asset so it
+        // serves statically (works on any host, no storage backend).
+        imageKey = `demo-assets/${brand.slug}-${i + 1}.webp`;
+        const file = path.join(process.cwd(), "public", imageKey);
+        await mkdir(path.dirname(file), { recursive: true });
+        await writeFile(
+          file,
+          await sharp(Buffer.from(svg)).webp({ quality: 88 }).toBuffer()
         );
       }
       const copy = g.copies ? g.copies[Math.min(i, g.copies.length - 1)] : null;

@@ -75,7 +75,16 @@ export async function putObject(
   await writeFile(file, data);
 }
 
+/* Seeded demo assets ship as committed files under public/, so the demo
+   works on any host with no storage backend. These prefixes are served
+   statically and read from the filesystem, never from Supabase/Blob. */
+const PUBLIC_PREFIXES = ["demo-assets/", "demo/", "brand/"];
+const isPublicKey = (key: string) => PUBLIC_PREFIXES.some((p) => key.startsWith(p));
+
 export async function readObject(key: string): Promise<Buffer> {
+  if (isPublicKey(key)) {
+    return readFile(path.join(process.cwd(), "public", key));
+  }
   if (useSupabase()) {
     const sb = await supabase();
     const { data, error } = await sb.storage.from(BUCKET).download(key);
@@ -92,6 +101,7 @@ export async function readObject(key: string): Promise<Buffer> {
 
 /** Signed URL for the browser, valid for one hour. */
 export async function getSignedUrl(key: string): Promise<string> {
+  if (isPublicKey(key)) return `/${key}`;
   if (useSupabase()) {
     const sb = await supabase();
     const { data, error } = await sb.storage

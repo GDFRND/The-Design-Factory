@@ -201,8 +201,9 @@ export function AuthSheet({
             </div>
           </div>
 
-          {/* Right column — the form on raised graphite */}
-          <div className="relative flex flex-col overflow-y-auto bg-raised p-8">
+          {/* Right column — the form. min-h-0 lets it scroll inside the
+              panel so the demo brand buttons at the bottom stay reachable. */}
+          <div className="relative flex min-h-0 flex-col overflow-y-auto bg-raised p-8">
             <DialogPrimitive.Close
               aria-label="Close"
               className="absolute right-4 top-4 rounded-full p-1 text-(--fg-subtle) transition-colors duration-180 ease-tdf hover:text-foreground"

@@ -29,7 +29,7 @@ export default async function StudioPage() {
   const percent = gate.completion.percent;
 
   return (
-    <>
+    <div data-theme="light" className="flex-1 bg-background text-foreground">
       <main className="container-tdf flex flex-col gap-10 py-12 lg:py-16">
         <div className="flex flex-col gap-4">
           <h1 className="font-display text-[clamp(2rem,4vw,3rem)] font-light leading-[1.08] tracking-[-0.018em]">
@@ -110,6 +110,6 @@ export default async function StudioPage() {
           <SupportPanel assistantName={assignment?.assistant.name ?? null} />
         </div>
       </main>
-    </>
+    </div>
   );
 }

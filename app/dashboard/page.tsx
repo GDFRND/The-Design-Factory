@@ -75,7 +75,8 @@ export default async function DashboardPage() {
   );
 
   return (
-    <main className="container-tdf flex flex-col gap-10 py-10">
+    <div data-theme="light" className="flex-1 bg-background text-foreground">
+      <main className="container-tdf flex flex-col gap-10 py-10">
       {/* Greeting strip */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-2">
@@ -187,6 +188,7 @@ export default async function DashboardPage() {
           </ul>
         </section>
       )}
-    </main>
+      </main>
+    </div>
   );
 }
