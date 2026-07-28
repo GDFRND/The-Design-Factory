@@ -67,7 +67,7 @@ export default async function GenerationPage({
   const hasPlan = Boolean(stored && stored.keyMessage !== undefined);
 
   return (
-    <>
+    <div data-theme="light" className="flex-1 bg-background text-foreground">
       <CreationWorkspace
         generation={{
           id: generation.id,
@@ -92,6 +92,6 @@ export default async function GenerationPage({
             : null,
         }}
       />
-    </>
+    </div>
   );
 }

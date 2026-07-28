@@ -99,22 +99,13 @@ export async function readObject(key: string): Promise<Buffer> {
   return readFile(resolved);
 }
 
-/** Signed URL for the browser, valid for one hour. */
+/** Browser URL for a stored object, valid for one hour.
+    Every non-public object is served through our own same-origin
+    /api/files route (which reads from Supabase or local via readObject).
+    Same-origin avoids next/image remote-domain config and CDN/CORS
+    surprises, and keeps the Supabase bucket private. */
 export async function getSignedUrl(key: string): Promise<string> {
   if (isPublicKey(key)) return `/${key}`;
-  if (useSupabase()) {
-    const sb = await supabase();
-    const { data, error } = await sb.storage
-      .from(BUCKET)
-      .createSignedUrl(key, SIGNED_TTL_SECONDS);
-    if (error || !data) throw new Error(`sign failed: ${error?.message}`);
-    return data.signedUrl;
-  }
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const { head } = await import("@vercel/blob");
-    const meta = await head(key).catch(() => null);
-    if (meta) return meta.url;
-  }
   const expiresAt = Date.now() + SIGNED_TTL_SECONDS * 1000;
   const sig = signKey(key, expiresAt);
   return `/api/files/${key}?e=${expiresAt}&s=${sig}`;
