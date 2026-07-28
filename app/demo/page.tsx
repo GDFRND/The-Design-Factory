@@ -17,7 +17,7 @@ export default function DemoPage() {
       <SpecPlate no="§00" name="Demo logins" note="APP_ENV=demo only" />
       <h1 className="text-h1">Three real brands, one chrome.</h1>
       <p className="max-w-[68ch] text-body text-secondary-foreground">
-        These accounts log in through the normal form — nothing is
+        These accounts log in through the normal form, nothing is
         special-cased. The buttons on the sign-in sheet just type these
         credentials for you.
       </p>

@@ -26,17 +26,20 @@ export type CopyBlocks = z.infer<typeof copySchema>;
 
 const COPY_INSTRUCTIONS = `Write the marketing copy for the asset described below.
 
-Respond with a single JSON object only — no prose, no fences:
+Respond with a single JSON object only, no prose, no fences:
 { "headline": string, "subhead": string, "body": string, "cta": string,
   "sections": [{ "heading": string, "body": string }] }
 
 "body" is the main copy. Use "sections" only for longer formats (emails,
-brochures, newsletters) — otherwise return an empty array. Match the tone
-of voice exactly. Keep prices, dates and names exactly as given.`;
+brochures, newsletters), otherwise return an empty array. Match the tone
+of voice exactly. Keep prices, dates and names exactly as given.
+
+Never use em dashes or en dashes in the copy. Use commas, periods, colons,
+or parentheses instead.`;
 
 function offlineCopy(p: ExpandedPrompt, brand: BrandDossier, tone?: string): CopyBlocks {
   return {
-    headline: p.keyMessage || `${p.assetType} — ${brand.hotelName}`,
+    headline: p.keyMessage || `${p.assetType} for ${brand.hotelName}`,
     subhead: p.offerDetails.validity ?? "",
     body: [
       p.marketingObjective,
@@ -44,7 +47,7 @@ function offlineCopy(p: ExpandedPrompt, brand: BrandDossier, tone?: string): Cop
       p.offerDetails.inclusions?.length
         ? `Includes ${p.offerDetails.inclusions.join(", ")}.`
         : "",
-      tone ? `(Tone requested: ${tone} — assistant offline, review before use.)` : "",
+      tone ? `(Tone requested: ${tone}. Assistant offline, review before use.)` : "",
     ]
       .filter(Boolean)
       .join(" "),

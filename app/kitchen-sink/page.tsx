@@ -107,14 +107,14 @@ export default function KitchenSink() {
         <p className="text-display-1">Display one</p>
         <p className="text-display-2">Display two</p>
         <p className="text-display-italic">One italic phrase per page</p>
-        <p className="text-h1">Heading one — Inter 600</p>
-        <p className="text-h2">Heading two — Inter 600</p>
+        <p className="text-h1">Heading one · Inter 600</p>
+        <p className="text-h2">Heading two · Inter 600</p>
         <p className="text-body max-w-[68ch]">
-          Body — Inter 400 at 17px, 1.65 line height. The measure never
+          Body: Inter 400 at 17px, 1.65 line height. The measure never
           exceeds sixty-eight characters, which is where this paragraph
           politely stops growing.
         </p>
-        <p className="text-caption text-muted-foreground">Caption — Inter 400 · 12/1.5</p>
+        <p className="text-caption text-muted-foreground">Caption · Inter 400 · 12/1.5</p>
         <MonoLabel>Mono label · 12 · 0.12em</MonoLabel>
       </section>
 

@@ -48,7 +48,7 @@ export function SupportPanel({
         <div className="flex flex-col">
           <span className="text-[15px] font-medium">Need help improving this?</span>
           <span className="text-caption text-muted-foreground">
-            Ask {name} — a person, not a bot.
+            Ask {name}, a person, not a bot.
           </span>
         </div>
       </div>

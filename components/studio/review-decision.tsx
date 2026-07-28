@@ -37,7 +37,7 @@ export function ReviewDecision({ token }: { token: string }) {
     <div className="flex flex-col gap-4">
       <div className="grid gap-1.5">
         <Label htmlFor="rv-note" className="text-[13px] text-secondary-foreground">
-          Note (optional — required context if you request changes)
+          Note (optional, required context if you request changes)
         </Label>
         <Textarea
           id="rv-note"

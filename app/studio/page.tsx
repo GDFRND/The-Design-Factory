@@ -59,8 +59,8 @@ export default async function StudioPage() {
                 </MonoLabel>
                 <p className="mt-3 text-body text-secondary-foreground">
                   {!gate.emailVerified
-                    ? "Verify your email, then add your logo and hotel basics — the studio opens at 25%."
-                    : `A little more and the studio opens — ${gate.threshold}% unlocks it. You're at ${percent}%.`}
+                    ? "Verify your email, then add your logo and hotel basics. The studio opens at 25%."
+                    : `A little more and the studio opens. ${gate.threshold}% unlocks it, and you're at ${percent}%.`}
                 </p>
                 <ul className="mt-4 flex flex-col gap-2">
                   {gate.completion.missing.slice(0, 3).map((m) => (

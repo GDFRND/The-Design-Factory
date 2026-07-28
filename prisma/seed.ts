@@ -126,7 +126,7 @@ const BRANDS: DemoBrand[] = [
     profile: {
       location: "Laikipia Conservancy, Laikipia County",
       roomCategories: ["Fort Room", "Conservancy Suite", "Family Rondavel", "Ranger's Cottage"],
-      restaurant: "The Boma — open-fire dining, single seating at 19:30",
+      restaurant: "The Boma, open-fire dining, single seating at 19:30",
       conference: "40-seat boardroom in the old stone stables",
       wellness: "Outdoor massage deck overlooking the waterhole",
       targetCustomers: ["International safari guests", "Conservation groups", "Domestic weekenders", "Small corporate retreats"],
@@ -196,7 +196,7 @@ const BRANDS: DemoBrand[] = [
     profile: {
       location: "Upper Hill, Nairobi",
       roomCategories: ["Regent Room", "Executive Suite", "Ambassador Suite", "Long-stay Residence"],
-      restaurant: "Aurelia — modern European, à la carte",
+      restaurant: "Aurelia, modern European, à la carte",
       conference: "Four rooms, 12–220 delegates, in-house AV",
       wellness: "Spa, 24-hour gym, lap pool",
       targetCustomers: ["Business travellers", "MICE clients", "Travel trade", "Diplomatic and NGO accounts"],
@@ -271,7 +271,7 @@ const BRANDS: DemoBrand[] = [
     imageStyle:
       "High sun, saturated, joyful. Patterned textiles, flat geometric colour blocks, wildlife, movement, people. Bold and graphic rather than photographic-realist. Pattern is a first-class element.",
     toneOfVoice:
-      "Warm, generous, energetic. Speaks to families and to the whole table. Uses a Swahili word where it earns its place — karibu, pamoja — never as decoration.",
+      "Warm, generous, energetic. Speaks to families and to the whole table. Uses a Swahili word where it earns its place (karibu, pamoja), never as decoration.",
     layoutApproach: "Horizontal lockup, pattern panel left, script right. Colour blocks carry hierarchy.",
     campaignStyle: "Kenya · camps, coast and city under one booking",
     profile: {
@@ -296,7 +296,7 @@ const BRANDS: DemoBrand[] = [
         outputKind: "COMPOSITE",
         targetAudience: "Nairobi families planning the weekend",
         marketingObjective: "Fill the weekend buffet tables",
-        keyMessage: "Karibu — the weekend table is set",
+        keyMessage: "Karibu, the weekend table is set",
         offerDetails: {
           price: "KES 2,500 per adult",
           validity: "Every Saturday and Sunday from 12:30pm",
@@ -321,10 +321,10 @@ const BRANDS: DemoBrand[] = [
       },
       copies: [
         {
-          headline: "Karibu — the weekend table is set",
+          headline: "Karibu, the weekend table is set",
           subhead: "Saturday and Sunday from 12:30pm",
           body:
-            "The family buffet is back on the weekend. KES 2,500 per adult, children under twelve half price. Bring the whole table — there is room.\n\nPamoja is the point: one long lunch, everyone served, nobody cooking.",
+            "The family buffet is back on the weekend. KES 2,500 per adult, children under twelve half price. Bring the whole table, there is room.\n\nPamoja is the point: one long lunch, everyone served, nobody cooking.",
           cta: "Book on WhatsApp",
           sections: [],
         },

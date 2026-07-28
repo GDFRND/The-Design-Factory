@@ -33,7 +33,7 @@ export default function Error({
             ? "The app couldn't reach its database."
             : "This page hit an unexpected error."}{" "}
           If you&apos;re running this locally, the database may not be
-          started — run{" "}
+          started. Run{" "}
           <code className="rounded-chip bg-inset px-1.5 py-0.5 font-mono text-[13px]">
             npm run demo
           </code>{" "}

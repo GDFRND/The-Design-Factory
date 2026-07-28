@@ -45,7 +45,7 @@ export function ProvisionalSystem({
       {palette.length ? (
         <div className="flex flex-col gap-2">
           <span className="text-[13px] text-secondary-foreground">
-            Palette — sampled from your logo
+            Palette, sampled from your logo
           </span>
           <div className="flex gap-2">
             {palette.map((hex) => (

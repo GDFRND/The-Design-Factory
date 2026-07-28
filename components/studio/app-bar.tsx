@@ -62,7 +62,7 @@ export function AppBar({
         {/* Left — the hotel logo goes home */}
         <Link
           href="/dashboard"
-          aria-label={`${hotelName} — dashboard`}
+          aria-label={`${hotelName} dashboard`}
           className="flex min-w-0 items-center gap-3"
         >
           {logoSrc ? (

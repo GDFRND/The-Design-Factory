@@ -23,9 +23,9 @@ const STATUS_CLASS: Record<AssetStatus, string> = {
 };
 
 const EXPLAINER = [
-  { no: "01 — Choose", title: "Choose what you want", body: "A poster, a room offer, an email to past guests." },
-  { no: "02 — Describe", title: "Describe your offer", body: "The offer, the price, the dates, who it's for." },
-  { no: "03 — Create", title: "Review and create", body: "We turn the brief into a plan, then build it in your brand." },
+  { no: "01 · Choose", title: "Choose what you want", body: "A poster, a room offer, an email to past guests." },
+  { no: "02 · Describe", title: "Describe your offer", body: "The offer, the price, the dates, who it's for." },
+  { no: "03 · Create", title: "Review and create", body: "We turn the brief into a plan, then build it in your brand." },
 ];
 
 export default async function DashboardPage() {

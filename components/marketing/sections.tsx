@@ -74,7 +74,7 @@ export function MarketingSections() {
           <div className="flex max-w-[68ch] flex-col gap-5 text-body text-secondary-foreground lg:pt-2">
             <p>
               Every hospitality business in Kenya contributes to the Tourism
-              Fund. The Fund exists to build the industry&apos;s capacity — and
+              Fund. The Fund exists to build the industry&apos;s capacity, and
               marketing capacity is where small properties are most alone.
             </p>
             <p>
@@ -97,8 +97,8 @@ export function MarketingSections() {
             <p className="max-w-[68ch] text-body text-secondary-foreground">
               A logo. Old posters. The menu. Photos on someone&apos;s phone.
               That is enough to start. We read what exists, propose a
-              provisional brand system — palette, type, tone of voice — and
-              you confirm each part before it is used.
+              provisional brand system covering palette, type and tone of
+              voice, and you confirm each part before it is used.
             </p>
           </div>
           <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -126,7 +126,7 @@ export function MarketingSections() {
             </h2>
             <p className="max-w-[68ch] text-body text-secondary-foreground">
               Your brand profile has a score. Every upload raises it. Every
-              confirmed detail raises it. Nothing nags — each missing piece
+              confirmed detail raises it. Nothing nags. Each missing piece
               simply explains what it would make possible.
             </p>
           </div>
@@ -140,17 +140,17 @@ export function MarketingSections() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             {
-              no: "01 — Choose",
+              no: "01 · Choose",
               title: "Choose what you want",
               body: "A poster. A room promotion. An email to past guests. Nineteen asset types, in plain language.",
             },
             {
-              no: "02 — Describe",
+              no: "02 · Describe",
               title: "Describe your offer",
               body: "The buffet, the price, the dates, who it is for. Write it the way you would tell a colleague.",
             },
             {
-              no: "03 — Review",
+              no: "03 · Review",
               title: "Review and create",
               body: "We turn your brief into a full creative plan you can edit. Then we produce it in your brand.",
             },
@@ -180,7 +180,7 @@ export function MarketingSections() {
               Nothing publishes until the right person says so.
             </h2>
             <p className="max-w-[68ch] text-body text-secondary-foreground">
-              Refine a variant in plain words — more premium, more local,
+              Refine a variant in plain words: more premium, more local,
               apply brand colours. When it is right, send it for approval.
               The person who creates is rarely the person who may publish;
               the platform models that.
@@ -232,7 +232,7 @@ export function MarketingSections() {
           </h2>
           <div className="flex max-w-[68ch] flex-col gap-5 text-body text-secondary-foreground">
             <p>
-              Every workspace has a Creative Support Assistant — a working
+              Every workspace has a Creative Support Assistant, a working
               designer trained through Jitume, the national digital-skills
               programme, at its Digital Media Factory. Each carries five to
               ten properties. Ask them what to run for Easter. Ask them to

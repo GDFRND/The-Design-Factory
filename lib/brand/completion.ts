@@ -71,7 +71,7 @@ const CHECKS: Check[] = [
   {
     label: "Target guests",
     weight: 10,
-    cta: "Tell us who you sell to — families, business travellers, groups.",
+    cta: "Tell us who you sell to: families, business travellers, groups.",
     done: (i) => some(i.profile?.targetCustomers),
   },
   {
@@ -99,7 +99,7 @@ const CHECKS: Check[] = [
   {
     label: "Brand rules",
     weight: 10,
-    cta: "Upload guidelines — or confirm the palette and type we propose.",
+    cta: "Upload guidelines, or confirm the palette and type we propose.",
     done: (i) =>
       i.assetKinds.includes("GUIDELINES") ||
       Boolean(i.brandSystem?.palette && i.brandSystem?.typography),

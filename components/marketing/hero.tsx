@@ -39,7 +39,7 @@ export function Hero() {
       {/* Navbar */}
       <div className="relative z-10 px-6 pt-6 md:px-12 lg:px-16">
         <nav className="panel flex items-center justify-between px-4 py-2">
-          <Link href="/" aria-label="The Design Factory — home" className="shrink-0">
+          <Link href="/" aria-label="The Design Factory home" className="shrink-0">
             {/* Full lockup needs ~320px; below md the mark stands alone
                 (40px minimum, TDF-BRD-01 §min-sizes). */}
             <span className="hidden md:block">

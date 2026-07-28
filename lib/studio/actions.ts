@@ -52,7 +52,7 @@ export async function createGeneration(
     return {
       ok: false,
       error:
-        "This workspace has used its monthly creation allowance. It resets on the 1st — or ask support to raise it.",
+        "This workspace has used its monthly creation allowance. It resets on the 1st, or ask support to raise it.",
     };
   }
 

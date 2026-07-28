@@ -17,7 +17,7 @@ import type { OutputKind } from "@/lib/studio/asset-types";
 
 const EXPANSION_INSTRUCTIONS = `Turn the marketing brief below into a structured creative plan.
 
-Respond with a single JSON object only — no prose, no markdown fences. Shape:
+Respond with a single JSON object only, no prose, no markdown fences. Shape:
 
 {
   "assetType": string,
@@ -35,7 +35,7 @@ Respond with a single JSON object only — no prose, no markdown fences. Shape:
   "missingDetails": string[]   // facts the hotel should confirm, phrased as short prompts
 }
 
-Ground every field in the brand dossier when one is provided. Keep each field concrete and short — these render as an editable form, not an essay.`;
+Ground every field in the brand dossier when one is provided. Keep each field concrete and short; these render as an editable form, not an essay. Never use em dashes or en dashes in any field.`;
 
 function buildUserMessage(input: {
   assetType: string;
@@ -126,7 +126,7 @@ function offlineExpansion(input: {
     outputFormat:
       input.outputKind === "IMAGE" ? "1080×1350 · social feed" : "Editable document",
     missingDetails: [
-      "The creative assistant is offline — review every field before creating.",
+      "The creative assistant is offline. Review every field before creating.",
     ],
   };
 }

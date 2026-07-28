@@ -32,7 +32,7 @@ export function PartnerStrip({ className }: { className?: string }) {
         <span aria-hidden className="h-7 w-px bg-tdf-200/40" />
         <Image
           src="/brand/partners/digital-media-factory-plated.png"
-          alt="Jitume — Digital Media Factory"
+          alt="Jitume Digital Media Factory"
           width={Math.round(CAP * JITUME_ASPECT)}
           height={CAP}
           style={{ width: Math.round(CAP * JITUME_ASPECT), height: CAP }}
